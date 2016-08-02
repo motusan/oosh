@@ -1,0 +1,15 @@
+**/.git/**
+.tmp/**
+assets/**
+uploaded_files/**
+forever/**
+views/**
+**/**.tmp
+**/.DS_Store
+.editorconfig
+.project
+.sailsrc
+stopOosh.sh
+oosh.sh
+/forever-dev.json
+README.md
