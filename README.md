@@ -1,3 +1,3 @@
 # oosh
 
-a [Sails](http://sailsjs.org) application
+Oosh is a declarative, visual, distributed music-making platform.
