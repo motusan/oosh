@@ -1,5 +1,6 @@
 .tmp/*
 config/local.js
+forever/*
 node_modules/*
 uploaded_files/*
 **/.DS_Store
