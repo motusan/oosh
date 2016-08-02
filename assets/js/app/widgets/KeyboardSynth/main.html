@@ -1,0 +1,56 @@
+<style>
+.keyboardsynth .keyboard {
+    position: relative;
+    float: none;
+}
+.keyboardsynth .key {
+    font-weight: bold;
+    text-align: center;
+    width: 20px;
+    float: left;
+    border: 2px solid black;
+    border-radius: 2px;
+}
+.keyboardsynth .key.active {
+    border: 2px solid green;
+}
+
+.keyboardsynth .white-key {
+    height: 50px;
+    border: 1px solid black;
+    background-color: white;
+    color: black;
+    z-index: 100;
+    vertical-align: bottom;
+}
+
+.keyboardsynth .black-key {
+    height: 25px;
+    background-color: black;
+    color: white;
+    z-index: 101;
+    vertical-align: top;
+}
+</style>
+<div class="widget keyboardsynth">
+    <div class="keyboard">
+        <div class="key white-key KeyA">A</div>
+        <div class="key black-key KeyW">W</div>
+        <div class="key white-key KeyS">S</div>
+        <div class="key black-key KeyE">E</div>
+        <div class="key white-key KeyD">D</div>
+        <div class="key white-key KeyF">F</div>
+        <div class="key black-key KeyT">T</div>
+        <div class="key white-key KeyG">G</div>
+        <div class="key black-key KeyY">Y</div>
+        <div class="key white-key KeyH">H</div>
+        <div class="key black-key KeyU">U</div>
+        <div class="key white-key KeyJ">J</div>
+        <div class="key white-key KeyK">K</div>
+        <div class="key black-key KeyO">O</div>
+        <div class="key white-key KeyL">L</div>
+        <div class="key black-key KeyP">P</div>
+        <div class="key white-key Semicolon">;</div>
+        <div class="key white-key Quote">"</div>
+    </div>
+</div>

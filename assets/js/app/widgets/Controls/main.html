@@ -1,0 +1,34 @@
+<style>
+.widget.controls {
+    height: 100%;
+}
+
+.controls .h-slider {
+}
+
+.controls .v-slider {
+}
+</style>
+<div class="widget controls">
+    <div class="v-slider">
+        <input type="range"
+            min="10"
+            max="1000"
+            step="10"
+            value="300"
+            data-orientation="vertical"
+            orientation="vertical"/>
+    </div>
+</div>
+<script>
+jQuery(document).ready(function(){
+    jQuery('input[type="range"]').rangeslider({
+        onInit : function(){
+            console.log('initialized');
+        },
+        onSlide : function(position, value){
+            console.log(position + ': ' + value);
+        }
+    });
+});
+</script>

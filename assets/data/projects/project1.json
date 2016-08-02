@@ -1,0 +1,273 @@
+{
+    "name" : "Project One",
+    "path" : "project1",
+    "password" : "m@1Pwd",
+    "screens" : [
+        {
+            "id" : "Paul's MacBook",
+            "name" : "Paul's MacBook (MacBook Pro)",
+            "host" : "localhost",
+            "areas" : [
+                {
+                    "id" : "area1",
+                    "name" : "Area 1",
+                    "shapeType" : "rect",
+                    "draggable" : true,
+                    "resizable" : true,
+                    "style" : {
+                        "border" : "2px dashed #99ee99",
+                        "border-radius" : "10px",
+                        "padding" : "4px",
+                        "background-color" : "#66bb66",
+                        "cursor" : "pointer",
+                        "opacity" : 0.6
+                    },
+                    "shapeDefinition" : "700,120,540,150",
+                    "widget" : "KeyboardSynth",
+                    "triggers" : [
+                        {
+                            "name":"oosh.keydown => webaudio.oscillator.start",
+                            "event":{
+                                "name": "oosh.keydown",
+                                "properties":{
+                                    "detail.properties.code": "KeyZ"
+                                }
+                            },
+                            "target": {
+                                "type": "WebAudioOscillator",
+                                "action":"play",
+                                "parameters": {
+                                    "id": "KeyZ",
+                                    "type" : "sine",
+                                    "detune" : 0,
+                                    "gain" : 1,
+                                    "frequency" : {
+                                        "input" : "event.detail.properties.code",
+                                        "transform":[
+                                            {"multiply" : 20}
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+
+                        {
+                            "name":"oosh.keyup => webaudio.oscillator.stop",
+                            "event":{
+                                "name": "oosh.keyup",
+                                "properties":{
+                                    "detail.properties.code": "KeyZ"
+                                }
+                            },
+                            "target": {
+                                "type": "WebAudioOscillator",
+                                "action": "stop",
+                                "parameters": {
+                                    "id": "KeyZ"
+                                }
+                            }
+                        },
+
+                        {
+                            "name":"groupmap oosh.keydown => webaudio.oscillator.start",
+                            "event":{
+                                "name": "oosh.keydown",
+                                "properties":{
+                                    "detail.properties.code": ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF",
+                                            "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO",
+                                            "KeyL", "KeyP", "Semicolon", "Quote"]
+                                }
+                            },
+                            "target": {
+                                "type": "WebAudioOscillator",
+                                "action":"play",
+                                "parameters": {
+                                    "id": {
+                                        "input" : "event.detail.properties.code"
+                                    },
+                                    "type" : "triangle",
+                                    "detune" : 0,
+                                    "gain" : 1,
+                                    "frequency" : {
+                                        "input" : "event.detail.properties.code",
+                                        "transform":[
+                                            {
+                                                "map": {
+                                                    "KeyA" : 1, "KeyW" : 2, "KeyS" : 3, "KeyE" : 4, "KeyD" : 5,
+                                                    "KeyF" : 6, "KeyT" : 7 , "KeyG" : 8, "KeyY" : 9, "KeyH" : 10,
+                                                    "KeyU" : 11, "KeyJ" : 12, "KeyK" : 13, "KeyO" : 14, "KeyL" : 15,
+                                                    "KeyP" : 16, "Semicolon" : 17, "Quote" : 18
+                                                }
+                                            },
+                                            {"add": 2},
+                                            {"exponentOf": 1.059463094359},
+                                            {"multiply": 440}
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "name":"groupmap oosh.keyup => webaudio.oscillator.stop",
+                            "event":{
+                                "name": "oosh.keyup",
+                                "properties":{
+                                    "detail.properties.code": ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF",
+                                            "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO",
+                                            "KeyL", "KeyP", "Semicolon", "Quote"]
+                                }
+                            },
+                            "target": {
+                                "type": "WebAudioOscillator",
+                                "action": "stop",
+                                "parameters": {
+                                    "id": {
+                                        "input" : "event.detail.properties.code"
+                                    }
+                                }
+                            }
+                        },
+
+                        {
+                            "name":"oosh.midimessage => webaudio.oscillator.start",
+                            "event":{
+                                "name": "oosh.midimessage",
+                                "properties":{
+                                    "detail.properties.data[0]" : "144"
+                                }
+                            },
+                            "target": {
+                                "type": "WebAudioOscillator",
+                                "action":"play",
+                                "parameters": {
+                                    "id": {
+                                        "input" : "event.detail.properties.data[1]"
+                                    },
+                                    "type" : "sine",
+                                    "detune" : 0,
+                                    "gain" : {
+                                        "input" : "event.detail.properties.data[2]",
+                                        "transform":[ {"divide" : 127} ]
+                                    },
+                                    "frequency" : {
+                                        "input" : "event.detail.properties.data[1]",
+                                        "transform":[
+                                            {"subtract": 69},
+                                            {"exponentOf": 1.059463094359},
+                                            {"multiply": 440}
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+
+                        {
+                            "name":"oosh.midimessage => webaudio.oscillator.stop",
+                            "event":{
+                                "name": "oosh.midimessage",
+                                "properties":{
+                                    "detail.properties.data[0]" : "128"
+                                }
+                            },
+                            "target": {
+                                "type": "WebAudioOscillator",
+                                "action":"stop",
+                                "parameters": {
+                                    "id": {
+                                        "input" : "event.detail.properties.data[1]"
+                                    }
+                                }
+                            }
+                        },
+
+                        {
+                            "name":"oosh.midimessage => webaudio.oscillator.bend",
+                            "event":{
+                                "name": "oosh.midimessage",
+                                "properties":{
+                                    "detail.properties.data[0]" : "224"
+                                }
+                            },
+                            "target": {
+                                "type": "WebAudioOscillator",
+                                "action":"change",
+                                "parameters": {
+                                    "id": "MySineWave",
+                                    "type" : "sine",
+                                    "frequency" : {
+                                        "input" : "event.detail.properties.data[2]",
+                                        "transform" : {
+                                            "multiply" : 100
+                                        }
+                                    }
+                                }
+                            }
+                        },
+
+                        {
+                            "name":"oosh.keydown => oosh.midimessage",
+                            "event":{
+                                "name": "oosh.keydown",
+                                "properties":{
+                                    "detail.properties.code": ["Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6",
+                                            "Digit7", "Digit8", "Digit9", "Digit0"]
+                                }
+                            },
+                            "target": {
+                                "type": "MIDIMessage",
+                                "action":"send",
+                                "parameters": {
+                                    "port": "1966176034",
+                                    "status" : 144,
+                                    "data1" : 64,
+                                    "data2" : 127
+                                }
+                            }
+                        }
+
+                    ]
+                },
+
+                {
+                    "id" : "area2",
+                    "name" : "Area 2",
+                    "shapeType" : "rect",
+                    "draggable" : true,
+                    "resizable" : true,
+                    "style" : {
+                        "border" : "2px dashed #9999ee",
+                        "border-radius" : "10px",
+                        "padding" : "4px",
+                        "background-color" : "#6666bb",
+                        "cursor" : "pointer",
+                        "opacity" : 0.6
+                    },
+                    "shapeDefinition" : "20,120,650,240",
+                    "widget" : "EventSpy"
+                }
+            ]
+        },
+
+        {
+            "id" : "Samsung Galaxy S4",
+            "name" : "Paul's Samsung Galaxy S4 (Android)",
+            "host" : "localhost",
+            "areas" : [
+                {
+                    "id" : "area1",
+                    "name" : "Area 1",
+                    "shapeType" : "rect",
+                    "style" : {
+                        "border" : "2px dashed #9999ee",
+                        "border-radius" : "10px",
+                        "padding" : "4px",
+                        "background-color" : "#6666bb",
+                        "cursor" : "pointer",
+                        "opacity" : 0.6
+                    },
+                    "shapeDefinition" : "60,60,200,100"
+                }
+            ]
+        }
+    ]
+}

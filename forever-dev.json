@@ -1,0 +1,8 @@
+{
+    "uid": "oosh",
+    "append": true,
+    "watch": true,
+    "script": "app.js",
+    "sourceDir": "./",
+    "args": ["--port", "1340"]
+}
