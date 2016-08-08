@@ -2,6 +2,15 @@ define('WebAudioOscillator', [], function(){
     var audioContext = new (window.AudioContext || window.webkitAudioContext)();
     var oscillatorMap = {};
     var gainMap = {};
+	var isPlayingMap = {};
+
+	var isPlaying = function(id){
+		return isPlayingMap[id] && isPlayingMap[id] === true;
+	};
+
+	var setPlaying = function(id, oscIsPlaying){
+		isPlayingMap[id] = oscIsPlaying;
+	};
 
     // cfg = { id, frequency, gain, detune }
     var createOscillator = function(cfg){
@@ -73,7 +82,12 @@ define('WebAudioOscillator', [], function(){
             else{
                 oscillator = change(cfg);
             }
-            oscillator.start();
+
+			if(!isPlaying(cfg.id)){
+				oscillator.start();
+				setPlaying(cfg.id, true);
+			}
+
         },
 
         stop : function(cfg){
@@ -85,6 +99,7 @@ define('WebAudioOscillator', [], function(){
             gain.disconnect(audioContext.destination);
             deleteOscillator(cfg.id);
             deleteGain(cfg.id + 'Gain');
+			setPlaying(cfg.id, false);
         },
 
         change : change

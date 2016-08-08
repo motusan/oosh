@@ -11,6 +11,7 @@ define({
         { "name":"mouseup", "properties":["target","which","x","y"] },
         {"name":"keydown",  "properties":["code","keyCode"] },
         {"name":"keyup",  "properties":["code","keyCode"] },
+
         { "name":"touchstart", "properties": [{"name":"changedTouches",
                                             "containedItemProperties": ["identifier","screenX","screenY","clientX","clientY","pageX","pageY","target"] }] },
         { "name":"touchend", "properties": [{"name":"changedTouches",
@@ -23,5 +24,21 @@ define({
         { "name":"gesturestart" },
         { "name":"gesturechange" },
         { "name":"gestureend" },
+
+        { "name":"drop", "properties": [
+			{"name":"dataTransfer", "containedItemProperties": ["files", "items"] },
+			{"name":"currentTarget", "containedItemProperties": ["files", "items"] },
+			{"name":"clientX"},{"name":"clientY"}
+		] },
+        { "name":"dragover", "properties": [
+			{"name":"dataTransfer", "containedItemProperties": ["files", "items"] },
+			{"name":"currentTarget", "containedItemProperties": ["files", "items"] },
+			{"name":"clientX"},{"name":"clientY"}
+		] },
+        { "name":"dragend", "properties": [
+			{"name":"dataTransfer", "containedItemProperties": ["files", "items"] },
+			{"name":"currentTarget", "containedItemProperties": ["files", "items"] },
+			{"name":"clientX"},{"name":"clientY"}
+		] }
     ]
 });

@@ -1,8 +1,9 @@
-define('Trigger', ['ValueFilter', 'WebAudioOscillator', 'MIDIMessage', 'Transformer', 'ValueResolver'],
-        function(valueFilter, webaudioOsc, midimessage, transformer, valueResolver){
+define('Trigger', ['ValueFilter', 'WebAudioOscillator', 'WebAudioBuffer', 'MIDIMessage', 'Transformer', 'ValueResolver'],
+        function(valueFilter, webaudioOsc, webaudioBuffer, midimessage, transformer, valueResolver){
 
     var targetTypes = {
         'WebAudioOscillator' : webaudioOsc,
+		'WebAudioBuffer' : webaudioBuffer,
         'MIDIMessage' : midimessage,
         'Widget' : 'widget'
     };
@@ -49,6 +50,7 @@ define('Trigger', ['ValueFilter', 'WebAudioOscillator', 'MIDIMessage', 'Transfor
             }
             paramMap[paramName] = finalValue;
         }
+		paramMap._context = context;
         actionFn(paramMap);
     };
 

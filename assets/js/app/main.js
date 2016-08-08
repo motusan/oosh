@@ -62,6 +62,7 @@ requirejs([
                 'oosh.midimessage' : function(ev){ var det = ev.detail; return [det.emitter.name, det.properties.data.join(', ')]; },
                 'oosh.keydown' :    function(ev){ var det = ev.detail; return [det.properties.code, det.properties.keyCode]; },
                 'oosh.keyup' :    function(ev){ var det = ev.detail; return [det.properties.code, det.properties.keyCode]; },
+                'oosh.drop' :      function(ev){ var det = ev.detail; return [det.properties.dataTransfer, det.properties.clientX, det.properties.clientY]; },
                 'oosh.touchcancel' : function(ev){
                     return ['touchcancel!!!!!!!!!'];
                 },

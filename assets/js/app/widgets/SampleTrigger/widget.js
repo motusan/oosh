@@ -14,63 +14,78 @@ define(['ValueFilter'], function(valueFilter){
         "description" : "Drop audio samples on the area and trigger them via mouse, keyboard, or MIDI message",
         "template" : "main",
         "triggers" : [
-			{
-                "name":"oosh.midimessage => sample.start",
-                "event":{
-                    "name": "oosh.midimessage"
-                },
-	            "targets": [
-					{
-		                "type": { "widget": "SampleTrigger" },
-		                "action":"onMidiMessage",
-		                "parameters": {
-							"data1" : { "input" : "event:detail:properties:data[0]" },
-							"data2" : { "input" : "event:detail:properties:data[1]" },
-							"data3" : { "input" : "event:detail:properties:data[2]" },
-		                    "screenId": { "input" : "screenId" },
-		                    "areaId": { "input" : "area:id" }
-		                }
-		            }
-				]
-	        },
             {
-	            "name":"oosh.keydown => sample.start",
-	            "event":{
-	                "name": "oosh.keydown"
-	            },
-	            "targets": [
+                "name":"oosh.midimessage => webaudio.buffer.start",
+                "event":{
+                    "name": "oosh.midimessage",
+                    "properties":{
+                        "detail:properties:data[0]" : "144",
+                        "detail:properties:data[1]" : { "lessThan" : 72 },
+                        "detail:properties:data[2]" : { "not" : "0" }
+                    }
+                },
+                "targets": [
 					{
-		                "type": { "widget": "SampleTrigger" },
-		                "action":"onKeyDown",
-		                "parameters": {
-							"code" : { "input" : "event:detail:properties:code" },
-		                    "screenId": { "input" : "screenId" },
-		                    "areaId": { "input" : "area:id" }
-		                }
-		            }
+	                    "type": "WebAudioBuffer",
+	                    "action":"play",
+	                    "parameters": {
+	                        "url" : "BASS_SNA.wav",
+							"areaId": {
+	                            "input" : "areaId"
+	                        },
+	                        "id": {
+	                            "input" : "event:detail:properties:data[1]"
+	                        },
+	                        "playbackRate" : {
+	                            "input" : "event:detail:properties:data[1]",
+	                            "transform":[ {"multiply" : 1.1 } ]
+	                        },
+	                        "detune" : 0,
+	                        "gain" : {
+	                            "input" : "event:detail:properties:data[2]",
+	                            "transform":[ {"divide" : 127} ]
+	                        }
+	                    }
+	                }
 				]
-	        },
-	        {
-	            "name":"oosh.keyup => sample.stop",
-	            "event":{
-	                "name": "oosh.keyup"
-	            },
-	            "targets": [
+			},
+            {
+                "name":"oosh.midimessage => webaudio.buffer.stop1",
+                "event":{
+                    "name": "oosh.midimessage",
+                    "properties":{
+                        "detail:properties:data[0]" : "128",
+                        "detail:properties:data[1]" : { "lessThan" : 72 },
+                    }
+                },
+                "targets": [
 					{
-		                "type": { "widget": "SampleTrigger" },
-		                "action":"onKeyUp",
-		                "parameters": {
-							"code" : "event:detail:properties:code",
-		                    "screenId": { "input" : "screenId" },
-		                    "areaId": { "input" : "area:id" }
-		                }
-		            }
+	                    "type": "WebAudioBuffer",
+	                    "action":"stop"
+	                }
 				]
-	        }
+			},
+            {
+                "name":"oosh.midimessage => webaudio.buffer.stop2",
+                "event":{
+                    "name": "oosh.midimessage",
+                    "properties":{
+                        "detail:properties:data[2]" : "0",
+                        "detail:properties:data[1]" : { "lessThan" : 72 },
+                    }
+                },
+                "targets": [
+					{
+	                    "type": "WebAudioBuffer",
+	                    "action":"stop"
+	                }
+				]
+			}
+
 		],
 
         onMidiMessage : function(params){
-			console.dir(params);
+			return;
 			var sampleTrigger = require('widgets/SampleTrigger/widget');
 			var info = sampleTrigger.areaSampleTriggerMap[params.areaId];
 			if(!info){
@@ -342,3 +357,59 @@ define(['ValueFilter'], function(valueFilter){
 		}
 	};
 });
+
+			/* OLD TRIGGERS:
+			{
+                "name":"oosh.midimessage => sample.start",
+                "event":{
+                    "name": "oosh.midimessage"
+                },
+	            "targets": [
+					{
+		                "type": { "widget": "SampleTrigger" },
+		                "action":"onMidiMessage",
+		                "parameters": {
+							"data1" : { "input" : "event:detail:properties:data[0]" },
+							"data2" : { "input" : "event:detail:properties:data[1]" },
+							"data3" : { "input" : "event:detail:properties:data[2]" },
+		                    "screenId": { "input" : "screenId" },
+		                    "areaId": { "input" : "area:id" }
+		                }
+		            }
+				]
+	        },
+            {
+	            "name":"oosh.keydown => sample.start",
+	            "event":{
+	                "name": "oosh.keydown"
+	            },
+	            "targets": [
+					{
+		                "type": { "widget": "SampleTrigger" },
+		                "action":"onKeyDown",
+		                "parameters": {
+							"code" : { "input" : "event:detail:properties:code" },
+		                    "screenId": { "input" : "screenId" },
+		                    "areaId": { "input" : "area:id" }
+		                }
+		            }
+				]
+	        },
+	        {
+	            "name":"oosh.keyup => sample.stop",
+	            "event":{
+	                "name": "oosh.keyup"
+	            },
+	            "targets": [
+					{
+		                "type": { "widget": "SampleTrigger" },
+		                "action":"onKeyUp",
+		                "parameters": {
+							"code" : "event:detail:properties:code",
+		                    "screenId": { "input" : "screenId" },
+		                    "areaId": { "input" : "area:id" }
+		                }
+		            }
+				]
+	        }
+			*/

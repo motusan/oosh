@@ -89,16 +89,21 @@ define('EventEmitterFactory', ['ValueResolver'], function(valueResolver){
                                 if(propConf.containedItemProperties){
                                     var dest = [];
                                     var container = ev[propConf.name];
-                                    for(var i=0; i<container.length; i++){
-                                        var item = container[i];
-                                        var it = {};
-                                        propConf.containedItemProperties.forEach(function(pname){
-                                            it[pname] = item[pname];
-                                        });
-                                        dest.push(it);
-                                    }
-                                    eventProperties[propConf.name] = dest;
-                                    jQuery('.messages').append(JSON.stringify(dest));
+									if(!container){
+										console.error('Property ' + propConf.name + ' was not found on the event');
+									}
+									else{
+	                                    for(var i=0; i<container.length; i++){
+	                                        var item = container[i];
+	                                        var it = {};
+	                                        propConf.containedItemProperties.forEach(function(pname){
+	                                            it[pname] = item[pname];
+	                                        });
+	                                        dest.push(it);
+	                                    }
+	                                    eventProperties[propConf.name] = dest;
+	                                    //jQuery('.messages').append(JSON.stringify(dest));
+									}
                                 }
 
                                 if(propConf.isEventEmitter){
