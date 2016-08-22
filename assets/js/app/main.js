@@ -40,7 +40,18 @@ requirejs([
             }
         });
 
-        Oosh.showModal('project-list');
+		var defProject = Oosh.preferences.get().defaultProjectPath;
+		if(defProject){
+			Oosh.openProject(defProject, function(project){
+				if(project.error){
+					console.error(project.error);
+					return false;
+				}
+			});
+		}
+		else{
+			Oosh.showModal('project-list');
+		}
 
         // This is where you specify which emitter configurations and which project to load
         var widgetConfs = [basicWave, controls, eventSpy, keyboardSynth, sampleTrigger];

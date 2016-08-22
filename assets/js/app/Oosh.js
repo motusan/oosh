@@ -52,10 +52,8 @@ function(eventEmitterFactory, widgetFactory, projectManager,
         },
 
         openProject : function(projectPath, loadedCallback){
-            if(!localStorage.preferences){
-                localStorage.preferences = "{}";
-            }
-            var prefs = JSON.parse(localStorage.preferences);
+			var prefs = preferences.get();
+
             if(!prefs.screenId){
                 modalManager.showModal('screen-info', {
                     preferences : prefs
@@ -63,7 +61,7 @@ function(eventEmitterFactory, widgetFactory, projectManager,
                 return false;
             }
 
-            var pwd = prompt('Enter the project password');
+			var pwd = prefs.defaultProjectPassword || prompt('Enter the project password');
             if(!pwd){
                 alert('No password, no project!');
                 return false;
