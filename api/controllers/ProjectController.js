@@ -52,6 +52,7 @@ var ProjectController = {
             }
 
             if(password == foundProject.password){
+				req.session.authenticated = true;
                 // add the screen to the project
                 if(!foundProject.hasScreen(screenId)){
                     foundProject.addScreen(screenId, function(updatedProject){

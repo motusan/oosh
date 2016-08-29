@@ -34,6 +34,27 @@ var FileSystemController = module.exports = {
 		}
 	},
 
+	remove : function(req, res){
+		var projectPath = req.params.projectPath;
+		var screenId = req.params.screenId;
+		var areaId = req.params.areaId;
+		var filename = req.params.filename;
+		var filepath = path.join(uploadBase, projectPath, screenId, areaId, filename);
+
+		// file or folder?
+		var info = fs.statSync(filepath);
+		if(!info.isFile()){
+			return res.json({ error : 'Not a file: ' + projectPath + '/' +
+					screenId + '/' + areaId + '/' + filename });
+		}
+		return fs.unlink(filepath, function(err){
+			if(err){
+				res.json({ error : err });
+			}
+			res.json({ removed : req.params });
+		});
+	},
+
 	upload : function(req, res){
 		var projectPath = req.params.projectPath;
 		var screenId = req.params.screenId;

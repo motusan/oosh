@@ -69,9 +69,7 @@ define('FileManager', ['ProjectManager',
 			request.onload = function() {
 				cb(request.response);
 			};
-
 			request.send();
-
 		}
 	};
 });

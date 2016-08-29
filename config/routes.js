@@ -44,6 +44,7 @@ module.exports.routes = {
     'get /project/disconnect/:projectPath' : 'ProjectController.disconnect',
     'post /project/broadcast/:projectPath' : 'ProjectController.broadcast',
 	'post /file/upload/:projectPath/:screenId/:areaId' : 'FileSystemController.upload',
+	'post /file/remove/:projectPath/:screenId/:areaId/:filename' : 'FileSystemController.remove',
 	'get /file/get/:projectPath/:screenId/:areaId/:filename?' : 'FileSystemController.read'
 
     /***************************************************************************

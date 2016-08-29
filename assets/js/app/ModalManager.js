@@ -19,7 +19,6 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
                                 return false;
                             }
                             Oosh.dismissModal('project-list');
-                            //Oosh.showModal('json-editor', project);
                         });
                     });
                 });
@@ -56,12 +55,6 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
             confs.forEach(function(conf){
                 var item = jQuery('<tr class="widget-conf"><td><a href="#">' + conf.id + '</a></td></tr>');
                 var a = item.find('a');
-                a.on('mousedown', function(){
-                    dlg.find('.modal-dialog').draggable('disable');
-                });
-                a.on('mouseup', function(){
-                    dlg.find('.modal-dialog').draggable('enable');
-                });
 
                 a.data('widget', conf);
                 widgetList.append(item);
@@ -69,9 +62,16 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
                     helper : 'clone',
                     appendTo : 'body',
                     zIndex : 1101,
-                    drag : function(ev, ui){
-                        jQuery('.area').css('z-index', 1100);
-                    }
+                    start : function(ev, ui){
+						var area = jQuery('.area');
+						dlg.find('.modal-dialog').draggable('disable');
+                        area.css('z-index', 1100);
+                    },
+					stop : function(ev, ui){
+						var area = jQuery('.area');
+						dlg.find('.modal-dialog').draggable('enable');
+                        area.css('z-index', 0);
+					}
                 });
 
             });
@@ -100,7 +100,8 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
         showModal : function(dlgName, data){
             var dlg = jQuery('.' + dlgName + '-dialog');
             dlg.modal({
-                backdrop : 'static'
+                backdrop : 'static',
+				keyboard : true
             });
             dlg.on('hidden.bs.modal', function(){
                 dlg.find('.btn-save').off('click');
@@ -110,11 +111,11 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
         },
 
         show : function(dlgName, data){
-            publicMethods.showModal(dlgName, data);
+			publicMethods.showModal(dlgName, data);
             var dlg = jQuery('.' + dlgName + '-dialog');
             dlg.find('.modal-dialog').draggable();
             dlg.find('.modal-content').resizable();
-            jQuery('.modal-backdrop').remove();
+            //jQuery('.modal-backdrop').remove();
         },
 
         dismissModal : function(dlgName){

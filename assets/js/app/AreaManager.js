@@ -1,12 +1,12 @@
-define('AreaManager', ['WidgetFactory', 'js/dependencies/jquery-ui/jquery-ui.min.js',
+define('AreaManager', ['WidgetFactory', 'ProjectManager', 'js/dependencies/jquery-ui/jquery-ui.min.js',
         "js/dependencies/jquery.ui.touch-punch/jquery.ui.touch-punch.min.js"],
-    function(widgetFactory, jqueryui, jquitp){
+    function(widgetFactory, projectManager, jqueryui, jquitp){
 
         var onDrop = function(area, draggable){
             var widgetConf = draggable.data('widget');
             if(widgetConf){
                 require('AreaManager').addAreaWidget(area, widgetConf.id);
-                require('ProjectManager').update();
+                require('ProjectManager').updateScreenArea(area);
             }
         };
 
@@ -14,9 +14,7 @@ define('AreaManager', ['WidgetFactory', 'js/dependencies/jquery-ui/jquery-ui.min
             var shapeDef = [ui.position.left, ui.position.top,
                         ev.target.clientWidth, ev.target.clientHeight].join(',');
             area.shapeDefinition = shapeDef;
-            var pm = require('ProjectManager');
-            pm.updateScreenArea(area);
-            //pm.update();
+            require('ProjectManager').updateScreenArea(area);
         };
 
         var renderArea = function(area){
@@ -62,6 +60,7 @@ define('AreaManager', ['WidgetFactory', 'js/dependencies/jquery-ui/jquery-ui.min
 
         var publicMethods = {
             renderScreenAreas : function(){
+				var pm = require('ProjectManager');
                 var screen = require('ProjectManager').getLocalScreen();
                 screen.areas.forEach(function(area){
                     renderArea(area);
@@ -69,6 +68,7 @@ define('AreaManager', ['WidgetFactory', 'js/dependencies/jquery-ui/jquery-ui.min
             },
 
             createScreenArea : function(screen){
+				var pm = require('ProjectManager');
                 var now = (new Date()).getTime();
                 var newArea = {
                         id : 'area' + now,
@@ -88,27 +88,13 @@ define('AreaManager', ['WidgetFactory', 'js/dependencies/jquery-ui/jquery-ui.min
                         widget : false
                 };
                 screen.areas.push(newArea);
-                require('ProjectManager').updateScreen(screen);
+                pm.updateScreen(screen);
                 renderArea(newArea);
                 return newArea;
             },
 
-			/*
-            updateScreenArea : function(screen, area){
-                var areas = screen.areas;
-                for(var i=0; i<areas; i++){
-                    var test = areas[i];
-                    if(test.id == area.id){
-                        screen.areas[i] = area;
-                        require('ProjectManager').update();
-                        return true;
-                    }
-                }
-                return false;
-            },
-			*/
-
             addAreaWidget : function(area, widgetIdOrConf){
+				var pm = require('ProjectManager');
                 var widgetId = widgetIdOrConf.id || widgetIdOrConf;
                 var conf = widgetIdOrConf.id ? widgetIdOrConf : widgetFactory.getWidgetConfiguration(widgetIdOrConf);
                 area.widget = {
@@ -116,14 +102,7 @@ define('AreaManager', ['WidgetFactory', 'js/dependencies/jquery-ui/jquery-ui.min
                     configuration : conf
                 };
                 widgetFactory.renderWidget(area);
-/*
-                var widget = require('js/app/widgets/' + area.widget.name + '/widget');
-                var initFn = widget.initializeWidget;
-                if(typeof initFn == 'function')
-                initFn({
-                    areaId : area.id
-                });
-*/
+				pm.updateScreenArea(area);
             }
         };
         return publicMethods;

@@ -33,7 +33,7 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/moka/oosh.git"
+    "url": "git://github.com/motusan/oosh.git"
   },
   "author": "moka",
   "license": ""

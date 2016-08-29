@@ -27,6 +27,7 @@ module.exports.policies = {
   ***************************************************************************/
 
   // '*': true,
+  '*': false,
 
   /***************************************************************************
   *                                                                          *
@@ -48,4 +49,20 @@ module.exports.policies = {
 		// before letting any users feed our rabbits
 		// feed : ['isNiceToAnimals', 'hasRabbitFood']
 	// }
+
+	ProjectController : {
+		  list : true,
+		  open : true,
+		  create : true,
+		  update : ['sessionAuth'],
+		  connect : ['sessionAuth'],
+		  disconnect : ['sessionAuth'],
+		  broadcast : ['sessionAuth']
+	},
+
+	FileSystemController : {
+		  upload : ['sessionAuth'],
+		  remove : ['sessionAuth'],
+		  read : ['sessionAuth']
+	}
 };

@@ -24,30 +24,7 @@ define(['ValueFilter'], function(valueFilter){
                         "detail:properties:data[2]" : { "not" : "0" }
                     }
                 },
-                "targets": [
-					{
-	                    "type": "WebAudioBuffer",
-	                    "action":"play",
-	                    "parameters": {
-	                        "url" : "BASS_SNA.wav",
-							"areaId": {
-	                            "input" : "areaId"
-	                        },
-	                        "id": {
-	                            "input" : "event:detail:properties:data[1]"
-	                        },
-	                        "playbackRate" : {
-	                            "input" : "event:detail:properties:data[1]",
-	                            "transform":[ {"multiply" : 1.1 } ]
-	                        },
-	                        "detune" : 0,
-	                        "gain" : {
-	                            "input" : "event:detail:properties:data[2]",
-	                            "transform":[ {"divide" : 127} ]
-	                        }
-	                    }
-	                }
-				]
+                "targets": []
 			},
             {
                 "name":"oosh.midimessage => webaudio.buffer.stop1",
@@ -61,7 +38,15 @@ define(['ValueFilter'], function(valueFilter){
                 "targets": [
 					{
 	                    "type": "WebAudioBuffer",
-	                    "action":"stop"
+	                    "action":"stop",
+						"parameters": {
+							"areaId": {
+	                            "input" : "areaId"
+	                        },
+	                        "id": {
+	                            "input" : "event:detail:properties:data[1]"
+	                        }
+						}
 	                }
 				]
 			},
@@ -77,107 +62,29 @@ define(['ValueFilter'], function(valueFilter){
                 "targets": [
 					{
 	                    "type": "WebAudioBuffer",
-	                    "action":"stop"
+	                    "action":"stop",
+						"parameters": {
+							"areaId": {
+	                            "input" : "areaId"
+	                        },
+	                        "id": {
+	                            "input" : "event:detail:properties:data[1]"
+	                        }
+						}
 	                }
 				]
 			}
-
 		],
 
-        onMidiMessage : function(params){
-			return;
-			var sampleTrigger = require('widgets/SampleTrigger/widget');
-			var info = sampleTrigger.areaSampleTriggerMap[params.areaId];
-			if(!info){
-				return;
-			}
-
-			var matches = info.triggerMidiMessages.filter(function(item){
-				return valueFilter.test(item.filter, params);
-			});
-
-			if(matches.length > 0){
-				matches.forEach(function(match){
-
-					var action = match.action;
-					if(action == 'play'){
-						info.source = sampleTrigger.playBuffer(info.audioBuffer, match.playbackRate);
-						sampleTrigger.areaSampleTriggerMap[params.areaId] = info;
-					}
-					else if(action == 'stop'){
-						info.source.stop(0);
-					}
-					else if(action == 'transform'){
-						var trxTargets = match.targets;
-						trxTargets.forEach(function(trxTarget){
-							var targetName = trxTarget.name;
-							if(name=='source'){
-								var source = info.source;
-								/*
-								{
-									"filters": [],
-									"action": "...",
-									"targets": [{
-										"object": "source",
-										"property": "playbackRate",
-										"transforms": [{
-											"input" : "event:detail:properties:data[1]",
-											"transform": [
-												{"prefix": "osc2"}
-											]
-										}]
-									}]
-								}
-								*/
-							}
-						});
-					}
-				});
-			}
-        },
-
-        onKeyDown : function(params){
-			var sampleTrigger = require('widgets/SampleTrigger/widget');
-			var info = sampleTrigger.areaSampleTriggerMap[params.areaId];
-			if(!info){
-				return;
-			}
-			var found = info.triggerKeyCodes.find(function(test){
-				return test == params.code;
-			});
-
-			if(found){
-				var source = sampleTrigger.playBuffer(info.audioBuffer);
-				info.source = source;
-			}
-        },
-
-        onKeyUp : function(params){
-			var sampleTrigger = require('widgets/SampleTrigger/widget');
-			var info = sampleTrigger.areaSampleTriggerMap[params.areaId];
-			if(!info){
-				return;
-			}
-			var found = info.triggerKeyCodes.find(function(test){
-				return test == params.code;
-			});
-
-			if(found){
-				info.source.stop(0);
-			}
-        },
-
+/*
 		onAudioDataLoaded : function(audioData, areaId){
 			audioContext.decodeAudioData(audioData)
 			.then(function(decodedData) {
+				var pm = require('ProjectManager');
 				var sampleTrigger = require('widgets/SampleTrigger/widget');
-				var info = sampleTrigger.areaSampleTriggerMap[areaId];
-				if(!info){
-					info = {
-						triggerKeyCodes : [],
-						triggerMidiMessages : []
-					};
-				}
+				var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
+				var triggerKeyCodes = areaConf.triggerKeyCodes || [];
+
 				info.audioBuffer = decodedData;
 				sampleTrigger.areaSampleTriggerMap[areaId] = info;
 
@@ -201,18 +108,31 @@ define(['ValueFilter'], function(valueFilter){
 			source.start(0);
 			return source;
 		},
-
+*/
 		onFilesDrop : function(files, areaId){
 			for(var i = 0; i<files.length; i++){
 				var file = files[i];
 				var reader = new FileReader();
 			    reader.onload = function(ev){
 					var sampleTrigger = require('widgets/SampleTrigger/widget');
-					sampleTrigger.onAudioDataLoaded(ev.target.result, areaId);
+					var pm = require('ProjectManager');
+					//sampleTrigger.onAudioDataLoaded(ev.target.result, areaId);
+					var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
+					var target = sampleTrigger.createTriggerTarget({
+						file : file.name
+					});
+					var triggers = areaConf.widget.configuration.triggers;
+					triggers.forEach(function(trigger){
+						if(trigger.name == 'oosh.midimessage => webaudio.buffer.start'){
+							trigger.targets = [target];
+						}
+					});
+					pm.updateScreenArea(areaConf);
 				};
 			    reader.readAsArrayBuffer(file);
 			}
 		},
+
 
 		addWidgetFiles : function(files, areaId){
 			var file = files[0];
@@ -231,6 +151,8 @@ define(['ValueFilter'], function(valueFilter){
 			pm.updateScreenArea(areaConf);
 		},
 
+
+
 		loadWidgetFiles : function(areaId){
 			var pm = require('ProjectManager'), fm = require('FileManager');
 			var sampleTrigger = require('widgets/SampleTrigger/widget');
@@ -243,14 +165,15 @@ define(['ValueFilter'], function(valueFilter){
 			var widgetFiles = areaConf.widget.configuration.files;
 			if(widgetFiles){
 				var filename = widgetFiles[0].filename;
-				var path = project.path + '/' + screen.id + '/' + areaId + '/' + filename;
-				fm.getFileAudioData(path, function(data){
-					sampleTrigger.onAudioDataLoaded(data, areaId);
+				//var path = project.path + '/' + screen.id + '/' + areaId + '/' + filename;
+				//fm.getFileAudioData(path, function(data){
+				//	sampleTrigger.onAudioDataLoaded(data, areaId);
 					jQuery('#' + areaId + ' .uploaded-filename').text(filename);
-				});
+				//});
 			}
 		},
 
+		/*
 		setTriggerKeyCodes : function(keyCodes, areaId){
 			var pm = require('ProjectManager');
 			var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
@@ -286,13 +209,13 @@ define(['ValueFilter'], function(valueFilter){
 				sampleTrigger.areaSampleTriggerMap[areaId] = info;
 			}
 		},
+		*/
 
         initializeWidget : function(params){
 			var sampleTrigger = require('widgets/SampleTrigger/widget');
 			var fm = require('FileManager');
 
-			sampleTrigger.loadWidgetFiles(params.areaId);
-			sampleTrigger.loadTriggers(params.areaId);
+			//sampleTrigger.loadTriggers(params.areaId);
 
 			var area = jQuery('#' + params.areaId);
 			area.on('drop', function(ev){
@@ -302,8 +225,6 @@ define(['ValueFilter'], function(valueFilter){
 				sampleTrigger.onFilesDrop(files, params.areaId);
 				var jqXHR = area.find('input').fileupload('send', { files : files })
 					    .success(function (result, textStatus, jqXHR) {
-							console.log('upload success: ');
-							console.dir(files);
 							sampleTrigger.addWidgetFiles(files, params.areaId);
 						})
 					    .error(function (jqXHR, textStatus, errorThrown) {
@@ -326,12 +247,17 @@ define(['ValueFilter'], function(valueFilter){
 					sampleTrigger.onFilesDrop(data.files, params.areaId);
 				}
 			});
+			
+			sampleTrigger.loadWidgetFiles(params.areaId);
 
+			/*
 			area.find('a.add-key').on('click', function(){
 				sampleTrigger.promptForTriggerKeyCodes(this, params);
 			});
+			*/
         },
 
+		/*
 		promptForTriggerKeyCodes : function(keyLinkElement, params){
 			var sampleTrigger = require('widgets/SampleTrigger/widget');
 			var link = jQuery(keyLinkElement);
@@ -354,62 +280,46 @@ define(['ValueFilter'], function(valueFilter){
 			var keyArray = key.split(',');
 			sampleTrigger.areaSampleTriggerMap[params.areaId].triggerKeyCodes = keyArray;
 			sampleTrigger.setTriggerKeyCodes(keyArray, params.areaId);
+		},
+		*/
+
+		createTriggerTarget : function(opts){
+			var defaults = opts.defaults || {};
+			var file = opts.file;
+			var eventFilters = opts.eventFilters || {
+				"detail:properties:data[0]" : "144",
+				"detail:properties:data[1]" : { "lessThan" : 72 },
+				"detail:properties:data[2]" : { "not" : "0" }
+			};
+			var playbackRate = opts.playbackRate || 0.063;
+			var detune = opts.detune || 100.0;
+
+			var trigger = Object.assign({
+                "type": "WebAudioBuffer",
+                "action":"play",
+                "parameters": {
+                    "url" : file,
+					"areaId": {
+                        "input" : "areaId"
+                    },
+                    "id": {
+                        "input" : "event:detail:properties:data[1]"
+                    },
+                    "playbackRate" : {
+                        "input" : "event:detail:properties:data[1]",
+                        "transform":[ {"multiply" : playbackRate } ]
+                    },
+                    "detune" : {
+                        "input" : "event:detail:properties:data[1]",
+                        "transform":[ {"multiply" : detune } ]
+                    },
+                    "gain" : {
+                        "input" : "event:detail:properties:data[2]",
+                        "transform":[ {"divide" : 127} ]
+                    }
+                }
+			}, defaults);
+			return trigger;
 		}
 	};
 });
-
-			/* OLD TRIGGERS:
-			{
-                "name":"oosh.midimessage => sample.start",
-                "event":{
-                    "name": "oosh.midimessage"
-                },
-	            "targets": [
-					{
-		                "type": { "widget": "SampleTrigger" },
-		                "action":"onMidiMessage",
-		                "parameters": {
-							"data1" : { "input" : "event:detail:properties:data[0]" },
-							"data2" : { "input" : "event:detail:properties:data[1]" },
-							"data3" : { "input" : "event:detail:properties:data[2]" },
-		                    "screenId": { "input" : "screenId" },
-		                    "areaId": { "input" : "area:id" }
-		                }
-		            }
-				]
-	        },
-            {
-	            "name":"oosh.keydown => sample.start",
-	            "event":{
-	                "name": "oosh.keydown"
-	            },
-	            "targets": [
-					{
-		                "type": { "widget": "SampleTrigger" },
-		                "action":"onKeyDown",
-		                "parameters": {
-							"code" : { "input" : "event:detail:properties:code" },
-		                    "screenId": { "input" : "screenId" },
-		                    "areaId": { "input" : "area:id" }
-		                }
-		            }
-				]
-	        },
-	        {
-	            "name":"oosh.keyup => sample.stop",
-	            "event":{
-	                "name": "oosh.keyup"
-	            },
-	            "targets": [
-					{
-		                "type": { "widget": "SampleTrigger" },
-		                "action":"onKeyUp",
-		                "parameters": {
-							"code" : "event:detail:properties:code",
-		                    "screenId": { "input" : "screenId" },
-		                    "areaId": { "input" : "area:id" }
-		                }
-		            }
-				]
-	        }
-			*/

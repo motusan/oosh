@@ -2,6 +2,7 @@ define('WebAudioBuffer', [], function(){
     var audioContext = new (window.AudioContext || window.webkitAudioContext)();
     var sourceMap = {};
     var gainMap = {};
+	var bufferCache = {};
 
     // cfg = { id, file|url, playbackRate, gain, detune }
     var createBufferSource = function(cfg){
@@ -37,7 +38,7 @@ define('WebAudioBuffer', [], function(){
         if(cfg.playbackRate) source.playbackRate.value = cfg.playbackRate;
         if(cfg.gain){
             // if gain was specified, then use the implicitly created gain
-            gainMap[cfg.id + 'Gain'].gain.value = cfg.gain;
+            getGain(cfg.id + 'Gain').gain.value = cfg.gain;
         }
         return source;
     };
@@ -62,12 +63,17 @@ define('WebAudioBuffer', [], function(){
     };
 
 	var loadBufferFromFile = function(filename, cb){
+		var audioBuffer = bufferCache[filename];
+		if(audioBuffer){
+			return cb(audioBuffer);
+		}
 		var reader = new FileReader();
 		reader.onload = function(ev){
 			var audioData = ev.target.result;
 			audioContext.decodeAudioData(audioData)
 			.then(function(decodedData) {
-				var audioBuffer = decodedData;
+				audioBuffer = decodedData;
+				bufferCache[filename] = audioBuffer;
 				cb(audioBuffer);
 			});
 		};
@@ -80,6 +86,10 @@ define('WebAudioBuffer', [], function(){
 			url = '/file/get/' + projectManager.getProject().path +
 					'/' + projectManager.getScreenId() + '/' + url;
 		}
+		var audioBuffer = bufferCache[url];
+		if(audioBuffer){
+			return cb(audioBuffer);
+		}
 		var request = new XMLHttpRequest();
 		request.open('GET', url, true);
 		request.responseType = 'arraybuffer';
@@ -87,7 +97,8 @@ define('WebAudioBuffer', [], function(){
 			var audioData = request.response;
 			audioContext.decodeAudioData(audioData)
 			.then(function(decodedData) {
-				var audioBuffer = decodedData;
+				audioBuffer = decodedData;
+				bufferCache[url] = audioBuffer;
 				cb(audioBuffer);
 			});
 		};
@@ -110,26 +121,22 @@ define('WebAudioBuffer', [], function(){
 
         play : function(cfg){
             // cfg = { id, freq, gain, detune }
-            var source = getBufferSource(cfg.id);
-
-            if(!source){
-                source = createBufferSource(cfg);
-            }
-            else{
-                source = change(cfg);
-            }
-            source.start(0);
+            var source = createBufferSource(cfg);
+			source.start(0);
         },
 
         stop : function(cfg){
+			console.log('WebAudioBuffer.stop: ');
+			console.dir(cfg);
             var gain = getGain(cfg.id + 'Gain');
             if(!gain){
                 console.error('gain not found');
                 return false;
             }
-            gain.disconnect(audioContext.destination);
-            deleteBufferSource(cfg.id);
-            deleteGain(cfg.id + 'Gain');
+            //gain.disconnect(audioContext.destination);
+            //deleteBufferSource(cfg.id);
+            //deleteGain(cfg.id + 'Gain');
+			gain.gain.value = 0;
         },
 
         change : change
