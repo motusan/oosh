@@ -157,7 +157,13 @@ define(function(){
 		},
 
         initializeWidget : function(params){
+			var pm = require('ProjectManager');
 			areaId = params.areaId;
+			var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
+			if(areaConf.events){
+				events = areaConf.events;
+			}
+
 			area = jQuery('#' + params.areaId);
 			toggleLearnButton = area.find('button.toggle-learn-mode');
 			togglePlayButton = area.find('button.toggle-play-mode');
