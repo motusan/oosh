@@ -66,6 +66,7 @@ function(eventEmitterFactory, widgetFactory, projectManager,
                 alert('No password, no project!');
                 return false;
             }
+			
             projectManager.open({
                 path : projectPath,
                 screenId : prefs.screenId,

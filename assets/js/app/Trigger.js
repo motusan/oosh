@@ -31,7 +31,7 @@ define('Trigger', ['ValueFilter', 'WebAudioOscillator', 'WebAudioBuffer', 'MIDIM
         var actionName = targetInfo.action;
         var actionFn = target[actionName];
 
-        console.log('executeTargetAction: ' + targetTypeName + '.' + actionName);
+        //console.log('executeTargetAction: ' + targetTypeName + '.' + actionName);
 
         if(!actionFn){
             console.error('Invalid target action: ' + actionName);

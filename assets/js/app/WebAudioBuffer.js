@@ -126,8 +126,8 @@ define('WebAudioBuffer', [], function(){
         },
 
         stop : function(cfg){
-			console.log('WebAudioBuffer.stop: ');
-			console.dir(cfg);
+			//console.log('WebAudioBuffer.stop: ');
+			//console.dir(cfg);
             var gain = getGain(cfg.id + 'Gain');
             if(!gain){
                 console.error('gain not found');

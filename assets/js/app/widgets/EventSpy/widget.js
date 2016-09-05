@@ -1,4 +1,6 @@
 define(function(){
+	var area = null;
+
     return {
         "id" : "EventSpy",
         "name" : "Event Spy",
@@ -21,9 +23,14 @@ define(function(){
                 }]
             }
         ],
+
+		initializeWidget : function(params){
+			area = jQuery('#' + params.areaId);
+		},
+
         screenLog : function(msg){
             var ev = msg.event;
-            var msgEl = jQuery('.messages');
+            var msgEl = area.find('.messages');
             msgEl.append('<div class="message">' + ev.screenId + ':' + ev.event + ':' +
                     JSON.stringify(ev.detail ? ev.detail.properties : ev) + '</div>');
             msgEl.scrollTop(msgEl.scrollTop() + msgEl.find('.message:last').position().top);

@@ -36,7 +36,7 @@ define('ProjectManager', ['SocketService', 'Trigger', 'AreaManager', 'OoshJsonEd
         if(!project){
             return false;
         }
-        console.log('onBroadcastReceived: ' + JSON.stringify(msg));
+        //console.log('onBroadcastReceived: ' + JSON.stringify(msg));
         var screen = pm.getLocalScreen();
         if(screen){
             trigger.process(msg.data, screen);
