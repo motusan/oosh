@@ -16,7 +16,7 @@ define(function(){
 	var saveEvents = function(){
 		var pm = require('ProjectManager');
 		var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
-		areaConf.events = events;
+		areaConf.widget.configuration.events = events;
 		pm.updateScreenArea(areaConf);
 	};
 
@@ -160,8 +160,8 @@ define(function(){
 			var pm = require('ProjectManager');
 			areaId = params.areaId;
 			var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
-			if(areaConf.events){
-				events = areaConf.events;
+			if(areaConf.widget.configuration.events){
+				events = areaConf.widget.configuration.events;
 			}
 
 			area = jQuery('#' + params.areaId);
