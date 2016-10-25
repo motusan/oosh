@@ -1,7 +1,7 @@
 define(function(){
     return {
-        "id" : "BasicWave",
-        "name" : "BasicWave",
+        "id" : "MidiOscTrigger",
+        "name" : "MidiOscTrigger",
         "description" : "Use MIDI messages to trigger the WebAudioOscillator synthesizer.",
         "template" : "main",
         "triggers" :  [
@@ -65,7 +65,7 @@ define(function(){
                     }
                 },
                 {
-                    "type": { "widget": "BasicWave" },
+                    "type": { "widget": "MidiOscTrigger" },
                     "action":"onKbdDown",
                     "parameters": {
                         "midiNote" : { "input" : "event:detail:properties:data[1]" },
@@ -106,7 +106,7 @@ define(function(){
                     }
                 },
                 {
-                    "type": { "widget": "BasicWave" },
+                    "type": { "widget": "MidiOscTrigger" },
                     "action":"onKbdUp",
                     "parameters": {
                         "midiNote" : { "input" : "event:detail:properties:data[1]" },
@@ -136,7 +136,7 @@ define(function(){
                     }
                 },
                 {
-                    "type": { "widget": "BasicWave" },
+                    "type": { "widget": "MidiOscTrigger" },
                     "action":"onKbdUp",
                     "parameters": {
                         "midiNote" : { "input" : "event:detail:properties:data[1]" },
@@ -165,7 +165,7 @@ define(function(){
             var blacks = [1, 3, 6, 8, 10], afterBlacks = [2, 4, 7, 9, 11];
             var lastLeft = 0;
             var pos = 0;
-            var kbd = jQuery('#' + params.areaId + ' .basicwave .keyboard');
+            var kbd = jQuery('#' + params.areaId + ' .midiosctrigger .keyboard');
             for(var i=0; i<127; i++){
                 var isBlackKey = blacks.find(function(test){
                     return pos == test;

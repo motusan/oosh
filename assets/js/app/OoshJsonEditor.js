@@ -43,7 +43,9 @@ define('OoshJsonEditor', ['../../js/dependencies/jsoneditor/jsoneditor.min', 'Pr
                 var prj = editor.get();
                 console.log('OoshJsonEditor wants to save data:');
                 console.dir(prj);
-                Oosh.projectManager.update(prj);
+                var mgr = Oosh.projectManager;
+				mgr.update(prj);
+				mgr.jsonEditor.setDirty(false);
             }
             else{
                 console.error('JSONEditor save not required');

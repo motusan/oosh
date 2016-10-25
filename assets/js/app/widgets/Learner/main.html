@@ -1,15 +1,15 @@
 <style>
-.start-learning, .start-playing {
+.learner .start-learning, .learner .start-playing {
 	color: green;
 	border: 2px solid green;
 }
-.stop-learning, .stop-playing {
+.learner .stop-learning, .learner .stop-playing {
 	color: red;
 	border: 2px solid red;
 }
-.messages {
+.learner .messages {
     position: absolute;
-    top: 40px;
+    top: 60px;
     left: 10px;
     right: 10px;
     bottom: 10px;
@@ -18,7 +18,7 @@
     overflow-y: auto;
 }
 </style>
-<div class="widget">
+<div class="widget learner">
     <div><button class="toggle-learn-mode start-learning">Start Learning</button>
 	<button class="toggle-play-mode start-playing">Start Playing</button></div>
 	<div class="messages"><div>

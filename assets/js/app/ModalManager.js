@@ -53,7 +53,8 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
             widgetList.empty();
             var confs = Oosh.getWidgetConfigurations();
             confs.forEach(function(conf){
-                var item = jQuery('<tr class="widget-conf"><td><a href="#">' + conf.id + '</a></td></tr>');
+                var item = jQuery('<tr class="widget-row">' +
+						'<td><a href="#" title="' + conf.description + '">' + conf.id + '</a></td></tr>');
                 var a = item.find('a');
 
                 a.data('widget', conf);
@@ -85,7 +86,7 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
                 data = projectManager.getProject();
             }
             jsonEditor.setContent(data);
-        }
+        },
     };
 
     var onModalDisplay = function(dlgName, data){
@@ -121,7 +122,12 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
         dismissModal : function(dlgName){
             var dlg = jQuery('.' + dlgName + '-dialog');
             dlg.modal('hide');
-        }
+        },
+
+		onDismiss : function(cb){
+            var dlg = jQuery('.' + dlgName + '-dialog');
+            dlg.on('hidden.bs.modal', cb);
+		}
     };
     return publicMethods;
 });

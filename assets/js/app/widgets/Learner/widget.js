@@ -22,7 +22,7 @@ define(function(){
 
 	var setNextEvent = function(ndx){
 		if(ndx >= events.length - 1 || !isPlayMode){
-			publicMethods.stopPlaying();
+			publicMembers.stopPlaying();
 			return false;
 		}
 		var ev = events[ndx];
@@ -34,7 +34,7 @@ define(function(){
 		}, ev.ttl);
 	};
 
-    var publicMethods = {
+    var publicMembers = {
         "id" : "Learner",
         "name" : "Learner",
         "description" : "Captures events for input to another widget (e.g., to replay at a later time).",
@@ -59,10 +59,10 @@ define(function(){
 
 		toggleLearnMode : function(){
 			if(!isLearnMode){
-				publicMethods.startLearning();
+				publicMembers.startLearning();
 			}
 			else{
-				publicMethods.stopLearning();
+				publicMembers.stopLearning();
 			}
 			return isLearnMode;
 		},
@@ -72,7 +72,7 @@ define(function(){
 				return false;
 			}
 			isLearnMode = true;
-			publicMethods.removeAll();
+			publicMembers.removeAll();
 			var ts = (new Date()).getTime();
 			events.push({ event : 'start', timestamp : ts });
 
@@ -122,10 +122,10 @@ define(function(){
 
 		togglePlayMode : function(){
 			if(!isPlayMode){
-				publicMethods.startPlaying();
+				publicMembers.startPlaying();
 			}
 			else{
-				publicMethods.stopPlaying();
+				publicMembers.stopPlaying();
 			}
 			return isPlayMode;
 		},
@@ -168,9 +168,9 @@ define(function(){
 			toggleLearnButton = area.find('button.toggle-learn-mode');
 			togglePlayButton = area.find('button.toggle-play-mode');
 
-			toggleLearnButton.on('click', publicMethods.toggleLearnMode);
-			togglePlayButton.on('click', publicMethods.togglePlayMode);
+			toggleLearnButton.on('click', publicMembers.toggleLearnMode);
+			togglePlayButton.on('click', publicMembers.togglePlayMode);
 		}
     };
-	return publicMethods;
+	return publicMembers;
 });

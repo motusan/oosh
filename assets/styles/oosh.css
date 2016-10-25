@@ -75,6 +75,26 @@ html, body {
     font-family: inherit;
 }
 
+.widget-conf {
+    position: absolute;
+    top: 5px;
+    bottom: 30px;
+    left: 5px;
+    right: 5px;
+}
+
+.widget-conf div.jsoneditor {
+	border-color: transparent;
+}
+
+.widget-conf .jsoneditor-field,
+.widget-conf .jsoneditor-value,
+.widget-conf .jsoneditor textarea,
+.widget-conf .jsoneditor th,
+.widget-conf .jsoneditor td {
+    font-family: inherit;
+}
+
 .modal-body {
     height: 420px;
     overflow: auto;

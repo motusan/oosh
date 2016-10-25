@@ -38,7 +38,7 @@ define('AreaManager', ['WidgetFactory', 'ProjectManager', 'js/dependencies/jquer
 
             areaEl.css(area.style);
             areaEl.droppable({
-                accept: '.widget-conf a',
+                accept: '.widget-row a',
                 activeClass: 'area-drop-active',
                 hoverClass: 'area-drop-hover',
                 drop: function(event, ui) {
