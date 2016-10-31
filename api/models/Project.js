@@ -21,7 +21,6 @@ module.exports = {
 			type: 'STRING',
 			minLength: 4,
 			maxLength: 256,
-			alphanumericdashed : true,
 			required: true
 		},
 

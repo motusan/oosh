@@ -16,9 +16,10 @@ var ProjectController = {
     },
 
     create : function(req, res){
+        var path = req.params.projectPath;
         var name = req.body.name;
-        var path = req.params.path;
         var password = req.body.password;
+		var screenId = req.body.screenId;
 
         req.session.screenId = screenId;
 

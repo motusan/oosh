@@ -3,12 +3,6 @@ define(['ValueFilter'], function(valueFilter){
 	var source = null;
 
     return {
-		"areaSampleTriggerMap" : {}, /* areaId -> {
-			triggerMidiMessages : [],
-			triggerKeyCodes : [],
-			audioBuffer : <audioBuffer>
-		}
-		*/
         "id" : "SampleTrigger",
         "name" : "SampleTrigger",
         "description" : "Drop audio samples on the area and trigger them via mouse, keyboard, or MIDI message",
@@ -76,46 +70,12 @@ define(['ValueFilter'], function(valueFilter){
 			}
 		],
 
-/*
-		onAudioDataLoaded : function(audioData, areaId){
-			audioContext.decodeAudioData(audioData)
-			.then(function(decodedData) {
-				var pm = require('ProjectManager');
-				var sampleTrigger = require('widgets/SampleTrigger/widget');
-				var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
-				var triggerKeyCodes = areaConf.triggerKeyCodes || [];
-
-				info.audioBuffer = decodedData;
-				sampleTrigger.areaSampleTriggerMap[areaId] = info;
-
-				var source;
-				var area = jQuery('#' + areaId);
-				area.on('mousedown', function(e){
-					source = sampleTrigger.playBuffer(info.audioBuffer);
-				});
-				area.on('mouseup', function(e){
-					source.stop(0);
-				});
-			});
-		},
-
-		playBuffer : function(buffer, playbackRate){
-			var source = audioContext.createBufferSource();
-			var rate = playbackRate ? playbackRate.value : 1;
-			source.buffer = buffer;
-			source.connect(audioContext.destination);
-			source.playbackRate.value = rate;
-			source.start(0);
-			return source;
-		},
-*/
 		onFilesDrop : function(files, areaId){
-			for(var i = 0; i<files.length; i++){
-				var file = files[i];
-				var reader = new FileReader();
-			    reader.onload = function(ev){
-					var sampleTrigger = require('widgets/SampleTrigger/widget');
-					var pm = require('ProjectManager');
+			var sampleTrigger = require('widgets/SampleTrigger/widget');
+			var pm = require('ProjectManager');
+			
+			var createOnLoadFn = function(file){
+				return function(ev){
 					//sampleTrigger.onAudioDataLoaded(ev.target.result, areaId);
 					var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
 					var target = sampleTrigger.createTriggerTarget({
@@ -129,6 +89,12 @@ define(['ValueFilter'], function(valueFilter){
 					});
 					pm.updateScreenArea(areaConf);
 				};
+			};
+
+			for(var i = 0; i<files.length; i++){
+				var file = files[i];
+				var reader = new FileReader();
+			    reader.onload = createOnLoadFn(file);
 			    reader.readAsArrayBuffer(file);
 			}
 		},
@@ -247,7 +213,7 @@ define(['ValueFilter'], function(valueFilter){
 					sampleTrigger.onFilesDrop(data.files, params.areaId);
 				}
 			});
-			
+
 			sampleTrigger.loadWidgetFiles(params.areaId);
 
 			/*

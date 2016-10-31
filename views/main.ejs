@@ -27,6 +27,43 @@
 </div>
 
 
+    <div class="new-project-dialog modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cancel"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">New Project</h4>
+          </div>
+          <div class="modal-body">
+              <div class="form-group has-success has-feedback">
+                  <label class="control-label" for="name">Project name</label>
+                  <input type="text" class="form-control" id="name" aria-describedby="nameStatus">
+                  <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                  <span id="nameStatus" class="sr-only">(success)</span>
+              </div>
+
+              <div class="form-group has-success has-feedback">
+                  <label class="control-label" for="path">Path</label>
+                  <input type="text" class="form-control" id="path" aria-describedby="pathStatus">
+                  <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                  <span id="pathStatus" class="sr-only">(success)</span>
+              </div>
+
+              <div class="form-group has-success has-feedback">
+                  <label class="control-label" for="password">Password</label>
+                  <input type="text" class="form-control" id="password" aria-describedby="passwordStatus">
+                  <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                  <span id="passwordStatus" class="sr-only">(success)</span>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-default btn-submit" data-dismiss="modal">Start</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
     <div class="project-list-dialog modal fade" tabindex="-1" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">

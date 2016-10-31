@@ -38,7 +38,7 @@ module.exports.routes = {
 
     'post /project/list' : 'ProjectController.list',
     'post /project/:projectPath' : 'ProjectController.open',
-    'post /project/create' : 'ProjectController.create',
+    'post /project/create/:projectPath' : 'ProjectController.create',
     'post /project/update/:projectPath' : 'ProjectController.update',
     'get /project/connect/:projectPath' : 'ProjectController.connect',
     'get /project/disconnect/:projectPath' : 'ProjectController.disconnect',

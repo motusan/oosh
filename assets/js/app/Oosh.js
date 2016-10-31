@@ -3,6 +3,17 @@ define('Oosh', ['EventEmitterFactory', 'WidgetFactory', 'ProjectManager',
 function(eventEmitterFactory, widgetFactory, projectManager,
     modalManager, jsonEditor, preferences, areaManager, fileManager){
 
+	var doScreenIdCheck = function(){
+		var prefs = preferences.get();
+
+        if(!prefs.screenId){
+            modalManager.showModal('screen-info', {
+                preferences : prefs
+            });
+            return false;
+        }
+	};
+
     return {
         preferences : preferences,
         modalManager : modalManager,
@@ -51,22 +62,25 @@ function(eventEmitterFactory, widgetFactory, projectManager,
             readyCallback(widgetConfs);
         },
 
+		createProject : function(opts, loadedCallback){
+			var prefs = preferences.get();
+			opts.screenId = prefs.screenId;
+			doScreenIdCheck();
+
+			projectManager.create(opts);
+		},
+
         openProject : function(projectPath, loadedCallback){
 			var prefs = preferences.get();
+			doScreenIdCheck();
 
-            if(!prefs.screenId){
-                modalManager.showModal('screen-info', {
-                    preferences : prefs
-                });
-                return false;
-            }
-
-			var pwd = prefs.defaultProjectPassword || prompt('Enter the project password');
+			var pwd = projectPath == prefs.defaultProjectPath ?
+					prefs.defaultProjectPassword : prompt('Enter the project password');
             if(!pwd){
                 alert('No password, no project!');
                 return false;
             }
-			
+
             projectManager.open({
                 path : projectPath,
                 screenId : prefs.screenId,

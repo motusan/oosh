@@ -79,9 +79,9 @@ define('ProjectManager', ['SocketService', 'Trigger', 'AreaManager', 'OoshJsonEd
             jQuery.ajax({
                 url : '/project/create/' + encodeURIComponent(opts.path),
                 data : {
-                    screenId : opts.screenId,
                     name : opts.name,
-                    password : opts.password
+                    password : opts.password,
+                    screenId : opts.screenId
                 },
                 type : 'POST',
                 method : 'POST'

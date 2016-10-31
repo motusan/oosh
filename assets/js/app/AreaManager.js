@@ -2,6 +2,8 @@ define('AreaManager', ['WidgetFactory', 'ProjectManager', 'js/dependencies/jquer
         "js/dependencies/jquery.ui.touch-punch/jquery.ui.touch-punch.min.js"],
     function(widgetFactory, projectManager, jqueryui, jquitp){
 
+		var appBody = jQuery('#oosh');
+
         var onDrop = function(area, draggable){
             var widgetConf = draggable.data('widget');
             if(widgetConf){
@@ -48,7 +50,7 @@ define('AreaManager', ['WidgetFactory', 'ProjectManager', 'js/dependencies/jquer
                     onDrop(area, draggable);
                 }
             });
-            jQuery('body').append(areaEl);
+            appBody.append(areaEl);
             if(area.resizable){
                 areaEl.resizable({ stop: function(ev, ui){ onMoveOrResize(area, ev, ui); }
                 });
@@ -58,10 +60,17 @@ define('AreaManager', ['WidgetFactory', 'ProjectManager', 'js/dependencies/jquer
             }
         };
 
+		var removeAllScreenAreas = function(){
+			appBody.find('.area').remove();
+		}
+
         var publicMethods = {
+			clear : removeAllScreenAreas,
+
             renderScreenAreas : function(){
 				var pm = require('ProjectManager');
                 var screen = require('ProjectManager').getLocalScreen();
+				removeAllScreenAreas();
                 screen.areas.forEach(function(area){
                     renderArea(area);
                 });

@@ -100,6 +100,10 @@ html, body {
     overflow: auto;
 }
 
+.new-project-dialog .modal-body {
+	height: 260px;
+}
+
 .area-drop-active {
     border: 2px dashed red;
 }

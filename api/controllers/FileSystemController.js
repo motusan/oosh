@@ -47,7 +47,7 @@ var FileSystemController = module.exports = {
 			return res.json({ error : 'Not a file: ' + projectPath + '/' +
 					screenId + '/' + areaId + '/' + filename });
 		}
-		return fs.unlink(filepath, function(err){
+		return fs.unlink(filepath, (err) => {
 			if(err){
 				res.json({ error : err });
 			}
@@ -98,7 +98,7 @@ var FileSystemController = module.exports = {
 				resultFile.error
 	        	return cb({ error : { code : 'upload_file_size', detail : 'max size=' + maxSize + ', actual size=' + size}});
 	        }
-	        fs.rename(file.fd, destDir + '/' + filename, function(err){
+	        fs.rename(file.fd, destDir + '/' + filename, (err) => {
 				if(err){
 					sails.log.error({ error : err });
 					return cb(err);

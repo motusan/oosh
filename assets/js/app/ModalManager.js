@@ -2,6 +2,21 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
     function(jquery, jsonEditor, preferences, projectManager, areaManager){
 
     var modalMap = {
+        'new-project': function(){
+			var name = jQuery('#name'), path = jQuery('#path'), password = jQuery('#password');
+			var dlg = jQuery('.new-project-dialog');
+			dlg.find('.btn-submit').on('click', function(){
+				var opts = { name : name.val(), password : password.val(), path : path.val() };
+				Oosh.createProject(opts, function(project){
+					if(project.error){
+						console.error(project.error);
+						return false;
+					}
+					Oosh.dismissModal('new-project');
+				});
+			});
+        },
+
         'project-list': function(){
             projectManager.getProjectList(function(list){
                 var projectList = jQuery('.project-list');
@@ -23,9 +38,6 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
                     });
                 });
             });
-        },
-        'new-project': function(){
-
         },
         'screen-info': function(){
             var screenId = preferences.get('screenId');
