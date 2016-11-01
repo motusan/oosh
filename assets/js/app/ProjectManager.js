@@ -45,8 +45,9 @@ define('ProjectManager', ['SocketService', 'Trigger', 'AreaManager', 'OoshJsonEd
     };
 
     var onProjectUpdated = function(updatedProject){
-        var pm = require('ProjectManager');
+        var pm = require('ProjectManager'), am = require('AreaManager');
         pm.setProject(updatedProject);
+		am.renderScreenAreas();
     };
 
     var connect = function(){

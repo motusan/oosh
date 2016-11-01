@@ -17,13 +17,15 @@ requirejs([
     'jquery', 'bootstrap', 'Oosh',
     'emitters/MIDIAccess', 'emitters/MIDIMessage', 'emitters/Document', 'emitters/SpeechRecognition',
     'widgets/KeyboardSynth/widget', 'widgets/EventSpy/widget', 'widgets/MidiOscTrigger/widget',
-	'widgets/Controls/widget', 'widgets/SampleTrigger/widget', 'widgets/Learner/widget'
+	'widgets/Controls/widget', 'widgets/SampleTrigger/widget', 'widgets/Learner/widget',
+	'widgets/SimpleSampleMap/widget',
     ],
 
     function(jQuery, bootstrap, Oosh,
             midiAccess, midiMessage, doc, speech,
             keyboardSynth, eventSpy, midiOscTrigger,
-			controls, sampleTrigger, learner) {
+			controls, sampleTrigger, learner,
+			simpleSampleMap) {
 
     jQuery(document).ready(function(){
         window.Oosh = Oosh;
@@ -54,7 +56,8 @@ requirejs([
 		}
 
         // This is where you specify which emitter configurations and which project to load
-        var widgetConfs = [midiOscTrigger, controls, eventSpy, keyboardSynth, sampleTrigger, learner];
+        var widgetConfs = [midiOscTrigger, controls, eventSpy, keyboardSynth,
+				sampleTrigger, learner, simpleSampleMap];
         Oosh.loadWidgets(widgetConfs, function(widgetCfs){
             console.log("Widgets loaded");
             //console.dir(widgetCfs);
