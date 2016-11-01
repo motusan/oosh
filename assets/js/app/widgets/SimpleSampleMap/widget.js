@@ -122,7 +122,7 @@ define(['ValueFilter'], function(valueFilter){
 		onFilesDrop : function(files, areaId, target){
 			var simpleSampleMap = require('widgets/SimpleSampleMap/widget');
 			var pm = require('ProjectManager');
-			var note = jQuery(target).parent().attr('class').split('-')[1];
+			var note = target ? jQuery(target).parent().attr('class').split('-')[1] : false;
 
 			var createOnLoadFn = function(file){
 				return function(ev){
@@ -135,7 +135,7 @@ define(['ValueFilter'], function(valueFilter){
 					var triggers = areaConf.widget.configuration.triggers;
 					triggers.forEach(function(trigger){
 						if(trigger.name == 'oosh.midimessage => webaudio.buffer.start'){
-							trigger.targets = [target];
+							trigger.targets.push(target);
 						}
 					});
 					pm.updateScreenArea(areaConf);
@@ -227,7 +227,7 @@ define(['ValueFilter'], function(valueFilter){
 				simpleSampleMap.onFilesDrop(files, params.areaId, ev.target);
 				var jqXHR = area.find('input').fileupload('send', { files : files })
 					    .success(function (result, textStatus, jqXHR) {
-							simpleSampleMap.addWidgetFiles(files, params.areaId, ev.target);
+							simpleSampleMap.addWidgetFiles(files, params.areaId);
 						})
 					    .error(function (jqXHR, textStatus, errorThrown) {
 							console.error(errorThrown);
@@ -246,7 +246,7 @@ define(['ValueFilter'], function(valueFilter){
 				parent : area.find('.simplesamplemap'),
 				onFileChange : function(ev, data){
 					simpleSampleMap.addWidgetFiles(data.files, params.areaId);
-					simpleSampleMap.onFilesDrop(data.files, params.areaId, ev.target);
+					simpleSampleMap.onFilesDrop(data.files, params.areaId);
 				}
 			});
 
