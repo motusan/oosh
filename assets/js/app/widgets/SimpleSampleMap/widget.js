@@ -9,7 +9,7 @@ define(['ValueFilter'], function(valueFilter){
         "template" : "main",
         "triggers" : [
             {
-                "name":"oosh.midimessage => webaudio.buffer.start",
+                "name":"oosh.midimessage => widgetAction.onMidiNoteOn",
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
@@ -98,7 +98,6 @@ define(['ValueFilter'], function(valueFilter){
 		],
 
 		onMidiNoteOn : function(params){
-			console.log('onMidiNoteOn');
             var cell = jQuery('#' + params.areaId + ' .note-' + params.midiNote);
 			var label = jQuery('<div class="cell-label" id="cell-lbl-' + params.midiNote + '"><a href="#">' + params.midiNote + '</a></div>');
 			label.css({
@@ -107,13 +106,12 @@ define(['ValueFilter'], function(valueFilter){
 				top: cell.offset().top + 'px',
 				width: cell.width() + 'px',
 				height: cell.height() + 'px'
-			})
+			});
 			jQuery('body').append(label);
             cell.addClass('note-on');
         },
 
 		onMidiNoteOff : function(params){
-			console.log('onMidiNoteOff');
             var cell = jQuery('#' + params.areaId + ' .note-' + params.midiNote);
 			jQuery('#cell-lbl-' + params.midiNote).remove();
             cell.removeClass('note-on');
@@ -122,22 +120,17 @@ define(['ValueFilter'], function(valueFilter){
 		onFilesDrop : function(files, areaId, target){
 			var simpleSampleMap = require('widgets/SimpleSampleMap/widget');
 			var pm = require('ProjectManager');
-			var note = target ? jQuery(target).parent().attr('class').split('-')[1] : false;
+			var note = target ? jQuery(target).attr('class').split('-')[1] : false;
 
 			var createOnLoadFn = function(file){
 				return function(ev){
 					//SimpleSampleMap.onAudioDataLoaded(ev.target.result, areaId);
 					var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
-					var target = simpleSampleMap.createTriggerTarget({
+					var trigger = simpleSampleMap.createTrigger({
 						file : file.name,
 						note : note
 					});
-					var triggers = areaConf.widget.configuration.triggers;
-					triggers.forEach(function(trigger){
-						if(trigger.name == 'oosh.midimessage => webaudio.buffer.start'){
-							trigger.targets.push(target);
-						}
-					});
+					areaConf.widget.configuration.triggers.push(trigger);
 					pm.updateScreenArea(areaConf);
 				};
 			};
@@ -212,6 +205,7 @@ define(['ValueFilter'], function(valueFilter){
 			simpleSampleMap.drawGrid(area);
 			var cells = area.find('table td a, body .cell-label');
 			cells.on('dragover', function(ev){
+				console.log('dragover ' + ev.target.id);
 				cells.removeClass('dragover');
 				jQuery(this).addClass('dragover');
 			});
@@ -220,7 +214,7 @@ define(['ValueFilter'], function(valueFilter){
 			});
 
 			cells.on('drop', function(ev){
-				console.dir(ev);
+				console.dir('ev: ', ev);
 				ev.preventDefault();
 				ev.stopPropagation();
 				var files = ev.originalEvent.dataTransfer.files;
@@ -246,7 +240,7 @@ define(['ValueFilter'], function(valueFilter){
 				parent : area.find('.simplesamplemap'),
 				onFileChange : function(ev, data){
 					simpleSampleMap.addWidgetFiles(data.files, params.areaId);
-					simpleSampleMap.onFilesDrop(data.files, params.areaId);
+					simpleSampleMap.onFilesDrop(data.files, params.areaId, ev.delegatedEvent.target);
 				}
 			});
 
@@ -254,36 +248,42 @@ define(['ValueFilter'], function(valueFilter){
         },
 
 
-		createTriggerTarget : function(opts){
-			console.log('createTriggerTarget: ', opts);
-			var defaults = opts.defaults || {};
+		createTrigger : function(opts){
+			var note = opts.note;
 			var file = opts.file;
-			var eventFilters = opts.eventFilters || {
-				"detail:properties:data[0]" : "144",
-				"detail:properties:data[1]" : { "lessThan" : 128 },
-				"detail:properties:data[2]" : { "not" : "0" }
-			};
 			var playbackRate = opts.playbackRate || 0.063;
 			var detune = opts.detune || 100.0;
 
-			var trigger = Object.assign({
-                "type": "WebAudioBuffer",
-                "action":"play",
-                "parameters": {
-                    "url" : file,
-					"areaId": {
-                        "input" : "areaId"
-                    },
-                    "id": {
-                        "input" : "event:detail:properties:data[1]"
-                    },
-                    "playbackRate" : 1,
-                    "gain" : {
-                        "input" : "event:detail:properties:data[2]",
-                        "transform":[ {"divide" : 127} ]
-                    }
-                }
-			}, defaults);
+			var trigger = {
+				"name":"oosh.midimessage." + note + " => ",
+				"event":{
+					"name": "oosh.midimessage",
+					"properties":{
+						"detail:properties:data[0]" : "144",
+						"detail:properties:data[1]" : note,
+						"detail:properties:data[2]" : { "not" : "0" }
+					}
+				},
+				"targets": [
+				{
+	                "type": "WebAudioBuffer",
+	                "action":"play",
+	                "parameters": {
+	                    "url" : file,
+						"areaId": {
+	                        "input" : "areaId"
+	                    },
+	                    "id": {
+	                        "input" : "event:detail:properties:data[1]"
+	                    },
+	                    "gain" : {
+	                        "input" : "event:detail:properties:data[2]",
+	                        "transform":[ {"divide" : 127} ]
+	                    }
+	                }
+				}]
+			};
+
 			return trigger;
 		}
 	};
