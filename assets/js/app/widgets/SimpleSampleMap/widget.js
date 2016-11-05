@@ -13,7 +13,7 @@ define(['ValueFilter'], function(valueFilter){
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
-                        "detail:properties:data[0]" : "144",
+                        "detail:properties:data[0]" : { "between" : [ 144,159 ]},
                         "detail:properties:data[1]" : { "lessThan" : 128 },
                         "detail:properties:data[2]" : { "not" : "0" }
                     }
@@ -98,7 +98,8 @@ define(['ValueFilter'], function(valueFilter){
 		],
 
 		onMidiNoteOn : function(params){
-            var cell = jQuery('#' + params.areaId + ' .note-' + params.midiNote);
+			var area = jQuery('#' + params.areaId);
+            var cell = area.find('.note-' + params.midiNote);
 			var label = jQuery('<div class="cell-label" id="cell-lbl-' + params.midiNote + '"><a href="#">' + params.midiNote + '</a></div>');
 			label.css({
 				position: 'absolute',
@@ -259,7 +260,7 @@ define(['ValueFilter'], function(valueFilter){
 				"event":{
 					"name": "oosh.midimessage",
 					"properties":{
-						"detail:properties:data[0]" : "144",
+						"detail:properties:data[0]" : { "between" : [ 144,159 ]},
 						"detail:properties:data[1]" : note,
 						"detail:properties:data[2]" : { "not" : "0" }
 					}

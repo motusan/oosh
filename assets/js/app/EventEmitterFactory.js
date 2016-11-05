@@ -230,10 +230,14 @@ define('EventEmitterFactory', ['ValueResolver'], function(valueResolver){
                         var objNames = typeof windowObject == 'object' ? windowObject : [windowObject];
 
                         objNames.forEach(function(objName){
+							var emitterGetter = null;
                             var obj = valueResolver.resolve(objName, window);
-
-                            var emitterGetter = member ? obj[member] : obj;
-
+							if(!obj){
+								console.error('Object not found in window: ' + objName);
+							}
+							else{
+								emitterGetter = member ? obj[member] : obj;
+							}
                             if(emitterGetter){
                                 var memType = getVia.memberType;
                                 var params = getVia.memberParameters;

@@ -16,7 +16,7 @@ define('ValueFilter', ['ValueResolver'], function(valueResolver){
 
 		For example:
 		"properties":{
-			"detail:properties:data[0]" : "144",
+			"detail:properties:data[0]" : 144,
 			"detail:properties:data[1]" : { "lessThan" : 72 },
 			"detail:properties:data[2]" : { "not" : "0" }
 		}
@@ -27,7 +27,7 @@ define('ValueFilter', ['ValueResolver'], function(valueResolver){
                 // single value
                 var value = valueResolver.resolve(filterName, context);
                 var filterValue = filterMap[filterName];
-                if(typeof filterValue == 'string'){
+                if(typeof filterValue == 'string' || typeof filterValue == 'number'){
                     if(value != filterValue){
                         return false;
                     }
@@ -84,14 +84,14 @@ define('ValueFilter', ['ValueResolver'], function(valueResolver){
                 else if(filterValue.between){
                     // inclusive range (array of 2 elements)
                     var arr = filterValue.between;
-                    if(value < arr[0] && value > arr[1]){
+                    if(value < arr[0] || value > arr[1]){
                         return false;
                     }
                 }
                 else if(filterValue.notBetween){
                     // exclusive range
                     var arr2 = filterValue.notBetween;
-                    if(value >= arr2[0] || value <= arr2[1]){
+                    if(value >= arr2[0] && value <= arr2[1]){
                         return false;
                     }
                 }

@@ -1,5 +1,10 @@
 define('MIDIMessage', [], function(){
     var midiAccess = false;
+	var Constants = {
+		NoteOn : { "between" : [ 143,160 ]},
+		ActiveSensing : 254,
+		TimingClock : 248
+	};
 
     var onMIDIInit = function(midi){
         midiAccess = midi;
@@ -25,6 +30,8 @@ define('MIDIMessage', [], function(){
             // cfg : { port, status, data1, data2 }
             var output = midiAccess.outputs.get(cfg.port);
             output.send([ cfg.status, cfg.data1, cfg.data2 ]);
-        }
+        },
+
+		Constants : Constants
     };
 });

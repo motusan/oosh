@@ -23,12 +23,21 @@ define('ValueResolver', [], function(){
                 return str;
             }
             var parts = str.split(delimiter);
-            var value = inputMap[parts.shift()];
+			if(parts.length===0){
+				parts = [str];
+			}
+            var value = inputMap;
             while(parts.length > 0){
                 var part = parts.shift();
+				// is there a an array/object index being referenced?
                 var match = part.match(/(.+)\[([0-9+])\]/);
                 if(!match){
-                    value = value[part];
+					if(typeof value[part] == 'undefined'){
+						return false;
+					}
+					else{
+                    	value = value[part];
+					}
                 }
                 else{
                     value = value[match[1]][match[2]];
