@@ -1,7 +1,7 @@
 define('MIDIMessage', [], function(){
     var midiAccess = false;
 	var Constants = {
-		NoteOn : { "between" : [ 143,160 ]},
+		NoteOn : { "between" : [ 144,159 ]},
 		ActiveSensing : 254,
 		TimingClock : 248
 	};

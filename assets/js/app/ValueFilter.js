@@ -39,27 +39,19 @@ define('ValueFilter', ['ValueResolver'], function(valueResolver){
                     }
                 }
                 else if(filterValue.oneOf){
-                    // set (array)
-                    if(!(function(val, filterVal){
-                                var found = filterVal.oneOf.findIndex(function(testVal){
-                                    return testVal == val;
-                                });
-                                return found > -1;
-                        })(value, filterValue)){
-                            return false;
-                        }
-
+					if(filterValue.oneOf.findIndex(function(testVal){
+								return testVal == value;
+							}) == -1){
+						return false;
+					}
                 }
                 else if(filterValue.notOneOf){
-                    // negative set
-                    if(!(function(val, filterVal){
-                                var found = filterVal.notOneOf.findIndex(function(testVal){
-                                    return testVal == val;
-                                });
-                                return found == -1;
-                        })(value, filterValue)){
-                            return false;
-                        }
+                    if(filterValue.notOneOf.findIndex(function(testVal){
+		                        return testVal == value;
+		                    }) > -1){
+						return false;
+					}
+
                 }
                 else if(filterValue.greaterThan){
                     if(value <= filterValue.greaterThan){

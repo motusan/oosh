@@ -129,14 +129,9 @@ define('WebAudioBuffer', [], function(){
 			//console.log('WebAudioBuffer.stop: ');
 			//console.dir(cfg);
             var gain = getGain(cfg.id + 'Gain');
-            if(!gain){
-                console.error('gain not found');
-                return false;
-            }
-            //gain.disconnect(audioContext.destination);
-            //deleteBufferSource(cfg.id);
-            //deleteGain(cfg.id + 'Gain');
-			gain.gain.value = 0;
+            if(gain){
+				gain.gain.value = 0;
+			}
         },
 
         change : change

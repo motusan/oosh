@@ -13,7 +13,7 @@ define(['ValueFilter'], function(valueFilter){
 		filters.forEach(function(filter){
 			if(filter.exclude){
 				var excludeFilter = filter.exclude;
-				if(valueFilter.test(excludeFilter, ev)){
+				if(valueFilter.test(excludeFilter, { event : ev })){
 					passFilter = false;
 				}
 			}
@@ -47,7 +47,7 @@ define(['ValueFilter'], function(valueFilter){
 			{
 				"exclude": {
 					"event:detail:properties:data:0":{
-						"notOneOf":[248, 254]
+						"oneOf":[248, 254]
 					}
 				}
 			}

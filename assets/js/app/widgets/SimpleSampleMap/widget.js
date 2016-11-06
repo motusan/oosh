@@ -1,6 +1,65 @@
-define(['ValueFilter'], function(valueFilter){
+define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 	var audioContext = new (window.AudioContext || window.webkitAudioContext)();
 	var source = null;
+	var noteOnMap = {};
+
+	var onDragOver = function(ev){
+		var areaId = jQuery(this).attr('id');
+		var cell = jQuery(ev.target);
+		var cls = cell.attr('class');
+		var parts = cls.split('-');
+		if(parts.length != 2){
+			return false;
+		}
+		var note = parts[1]; // must be note-
+		var params = {
+			areaId : areaId,
+			midiNote : note
+		};
+		drawCellOverlay(params);
+		setTimeout(function(){
+			removeCellOverlay(params);
+		}, 1000);
+
+		ev.preventDefault();
+		ev.stopPropagation();
+	};
+
+	var drawCellOverlay = function(params){
+		// params = { areaId, midiNote }
+		var area = jQuery('#' + params.areaId);
+		var cell = area.find('.note-' + params.midiNote);
+		var label = jQuery('<div class="cell-label" id="cell-lbl-' + params.midiNote + '"><a href="#">' + params.midiNote + '</a></div>');
+		label.css({
+			position: 'absolute',
+			left: cell.offset().left + 'px',
+			top: cell.offset().top + 'px',
+			width: cell.width() + 'px',
+			height: cell.height() + 'px'
+		});
+		jQuery('body').append(label);
+        cell.addClass('note-on');
+
+		// for percussion hits, it disappears too quick, so force it show on screen for 1 sec
+		setTimeout(function(){
+			if(!cell.hasClass('note-on')){
+				jQuery('body').append(label);
+	            cell.addClass('note-on');
+				setTimeout(function(){
+					removeCellOverlay(params);
+				}, 1000);
+			}
+		}, 25);
+
+	};
+
+	var removeCellOverlay = function(params){
+		// params = { areaId, midiNote }
+		var area = jQuery('#' + params.areaId);
+		var cell = area.find('.note-' + params.midiNote);
+		jQuery('#cell-lbl-' + params.midiNote).remove();
+		cell.removeClass('note-on');
+	};
 
     return {
         "id" : "SimpleSampleMap",
@@ -13,28 +72,30 @@ define(['ValueFilter'], function(valueFilter){
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
-                        "detail:properties:data[0]" : { "between" : [ 144,159 ]},
+                        "detail:properties:data[0]" : midiMessage.Constants.NoteOn,
                         "detail:properties:data[1]" : { "lessThan" : 128 },
-                        "detail:properties:data[2]" : { "not" : "0" }
+                        "detail:properties:data[2]" : { "not" : 0 }
                     }
                 },
                 "targets": [
-				{
-					"type": { "widget": "SimpleSampleMap" },
-					"action":"onMidiNoteOn",
-					"parameters": {
-						"midiNote" : { "input" : "event:detail:properties:data[1]" },
-						"screenId": { "input" : "screenId" },
-						"areaId": { "input" : "area:id" }
+					{
+						"type": { "widget": "SimpleSampleMap" },
+						"action":"onMidiNoteOn",
+						"parameters": {
+							"midiNote" : { "input" : "event:detail:properties:data[1]" },
+							"rcvdTime" : { "input" : "event:detail:properties:receivedTime" },
+							"screenId": { "input" : "screenId" },
+							"areaId": { "input" : "area:id" }
+						}
 					}
-				}]
+				]
 			},
             {
-                "name":"oosh.midimessage => webaudio.buffer.stop1",
+                "name":"oosh.midimessage => widgetAction.onMidiNoteOff1",
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
-                        "detail:properties:data[0]" : "128",
+                        "detail:properties:data[0]" : 128,
                         "detail:properties:data[1]" : { "lessThan" : 128 },
                     }
                 },
@@ -56,6 +117,7 @@ define(['ValueFilter'], function(valueFilter){
 	                    "action":"onMidiNoteOff",
 	                    "parameters": {
 	                        "midiNote" : { "input" : "event:detail:properties:data[1]" },
+							"rcvdTime" : { "input" : "event:detail:properties:receivedTime" },
 	                        "screenId": { "input" : "screenId" },
 	                        "areaId": { "input" : "area:id" }
 	                    }
@@ -63,12 +125,12 @@ define(['ValueFilter'], function(valueFilter){
 				]
 			},
             {
-                "name":"oosh.midimessage => webaudio.buffer.stop2",
+                "name":"oosh.midimessage => widgetAction.onMidiNoteOff2",
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
-                        "detail:properties:data[2]" : "0",
                         "detail:properties:data[1]" : { "lessThan" : 128 },
+                        "detail:properties:data[2]" : 0,
                     }
                 },
                 "targets": [
@@ -89,6 +151,7 @@ define(['ValueFilter'], function(valueFilter){
 	                    "action":"onMidiNoteOff",
 	                    "parameters": {
 	                        "midiNote" : { "input" : "event:detail:properties:data[1]" },
+							"rcvdTime" : { "input" : "event:detail:properties:receivedTime" },
 	                        "screenId": { "input" : "screenId" },
 	                        "areaId": { "input" : "area:id" }
 	                    }
@@ -98,42 +161,35 @@ define(['ValueFilter'], function(valueFilter){
 		],
 
 		onMidiNoteOn : function(params){
-			var area = jQuery('#' + params.areaId);
-            var cell = area.find('.note-' + params.midiNote);
-			var label = jQuery('<div class="cell-label" id="cell-lbl-' + params.midiNote + '"><a href="#">' + params.midiNote + '</a></div>');
-			label.css({
-				position: 'absolute',
-				left: cell.offset().left + 'px',
-				top: cell.offset().top + 'px',
-				width: cell.width() + 'px',
-				height: cell.height() + 'px'
-			});
-			jQuery('body').append(label);
-            cell.addClass('note-on');
-
-			// for percussion hits, it disappears too quick, so force it show on screen for 1 sec
-			setTimeout(function(){
-				if(!cell.hasClass('note-on')){
-					jQuery('body').append(label);
-		            cell.addClass('note-on');
-					setTimeout(function(){
-						jQuery('#cell-lbl-' + params.midiNote).remove();
-			            cell.removeClass('note-on');
-					}, 1000);
-				}
-			}, 25);
+			drawCellOverlay(params);
+			console.log('on: ', params.rcvdTime);
+			noteOnMap['note-' + params.midiNote] = params.rcvdTime;
         },
 
 		onMidiNoteOff : function(params){
             var cell = jQuery('#' + params.areaId + ' .note-' + params.midiNote);
 			jQuery('#cell-lbl-' + params.midiNote).remove();
             cell.removeClass('note-on');
+			console.log('off: ', params.rcvdTime);
+
+			console.log(params.rcvdTime - noteOnMap['note-' + params.midiNote]);
         },
 
 		onFilesDrop : function(files, areaId, target){
 			var simpleSampleMap = require('widgets/SimpleSampleMap/widget');
 			var pm = require('ProjectManager');
-			var note = target ? jQuery(target).attr('class').split('-')[1] : false;
+			var note = false;
+
+			if(target){
+				var cls = jQuery(target).attr('class');
+				if(!cls){
+					var id = jQuery(target).parent().attr('id');
+					note = id.split('-')[2];
+				}
+				else{
+					note = cls.split('-')[1];
+				}
+			}
 
 			var createOnLoadFn = function(file){
 				return function(ev){
@@ -174,8 +230,6 @@ define(['ValueFilter'], function(valueFilter){
 			pm.updateScreenArea(areaConf);
 		},
 
-
-
 		loadWidgetFiles : function(areaId){
 			var pm = require('ProjectManager'), fm = require('FileManager');
 			var SimpleSampleMap = require('widgets/SimpleSampleMap/widget');
@@ -207,7 +261,6 @@ define(['ValueFilter'], function(valueFilter){
 			}
 		},
 
-
         initializeWidget : function(params){
 			var simpleSampleMap = require('widgets/SimpleSampleMap/widget');
 			var fm = require('FileManager');
@@ -218,7 +271,6 @@ define(['ValueFilter'], function(valueFilter){
 			simpleSampleMap.drawGrid(area);
 			var cells = area.find('table td a, body .cell-label');
 			cells.on('dragover', function(ev){
-				console.log('dragover ' + ev.target.id);
 				cells.removeClass('dragover');
 				jQuery(this).addClass('dragover');
 			});
@@ -240,10 +292,12 @@ define(['ValueFilter'], function(valueFilter){
 							console.error(errorThrown);
 						});
 			});
-			area.on('dragover', function(ev){
-				ev.preventDefault();
-				ev.stopPropagation();
+			area.on('dragover', onDragOver);
+
+			area.on('dragexit', function(ev){
+				cells.removeClass('dragover');
 			});
+
 			area.on('dragend', function(ev){
 				ev.dataTransfer.clearData();
 			});
@@ -272,7 +326,7 @@ define(['ValueFilter'], function(valueFilter){
 				"event":{
 					"name": "oosh.midimessage",
 					"properties":{
-						"detail:properties:data[0]" : { "between" : [ 144,159 ]},
+						"detail:properties:data[0]" : midiMessage.Constants.NoteOn,
 						"detail:properties:data[1]" : note,
 						"detail:properties:data[2]" : { "not" : "0" }
 					}
