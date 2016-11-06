@@ -110,6 +110,18 @@ define(['ValueFilter'], function(valueFilter){
 			});
 			jQuery('body').append(label);
             cell.addClass('note-on');
+
+			// for percussion hits, it disappears too quick, so force it show on screen for 1 sec
+			setTimeout(function(){
+				if(!cell.hasClass('note-on')){
+					jQuery('body').append(label);
+		            cell.addClass('note-on');
+					setTimeout(function(){
+						jQuery('#cell-lbl-' + params.midiNote).remove();
+			            cell.removeClass('note-on');
+					}, 1000);
+				}
+			}, 25);
         },
 
 		onMidiNoteOff : function(params){
