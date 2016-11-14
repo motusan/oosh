@@ -41,8 +41,13 @@ define(['ValueFilter'], function(valueFilter){
 	};
 
 	var setNextEvent = function(ndx){
-		if(ndx >= events.length - 1 || !isPlayMode){
+		if(!isPlayMode){
 			publicMembers.stopPlaying();
+			return false;
+		}
+
+		if(ndx >= events.length - 1){
+			publicMembers.startPlaying();
 			return false;
 		}
 		var ev = events[ndx];
