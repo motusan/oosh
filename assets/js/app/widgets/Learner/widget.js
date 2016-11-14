@@ -1,9 +1,29 @@
-define(function(){
+define(['ValueFilter'], function(valueFilter){
 	var isLearnMode = false, isPlayMode = false;
 	var areaId = null;
 	var area = null;
 	var toggleLearnButton = null, togglePlayButton = null;
 	var events = [];
+
+	var applyFilters = function(ev){
+		var pm = require('ProjectManager');
+		var areaConf = pm.findScreenArea(pm.getLocalScreen(), area.attr('id'));
+		var filters = areaConf.widget.configuration.filters;
+		if(!filters){
+			return true;
+		}
+
+		var passFilter = true;
+		filters.forEach(function(filter){
+			if(filter.exclude){
+				var excludeFilter = filter.exclude;
+				if(valueFilter.test(excludeFilter, { event : ev })){
+					passFilter = false;
+				}
+			}
+		});
+		return passFilter;
+	};
 
 	var addTimeDiffs = function(){
 		for(var i=0; i<events.length - 1; i++){
@@ -50,12 +70,22 @@ define(function(){
                     "action":"add",
                     "parameters": {
                         "event": {
-                            "input" : "event"
+                            "input" : ":event"
                         },
                     }
                 }]
             }
         ],
+		filters : [
+			{
+				"exclude": {
+					":event:detail:properties:data:0":{
+						"oneOf":[248, 254]
+					}
+				}
+			}
+		],
+
 
 		toggleLearnMode : function(){
 			if(!isLearnMode){
@@ -107,6 +137,9 @@ define(function(){
 				return;
 			}
             var ev = msg.event;
+			if(!applyFilters(ev)){
+				return false;
+			}
             var msgEl = area.find('.messages');
             msgEl.append('<div class="message">' + ev.screenId + ':' + ev.event + ':' +
                     JSON.stringify(ev.detail ? ev.detail.properties : ev) + '</div>');
