@@ -3,14 +3,21 @@ var fsExtra = require('fs-extra');
 var path = require('path');
 var uploadBase = process.cwd() + '/uploaded_files/projects';
 
-var FileSystemController = module.exports = {
+var getRealFilepath = function(projectPath, filename){
+	var dir = path.join(uploadBase, projectPath);
+	if(filename){
+		return path.join(dir, filename);
+	}
+	else{
+		return dir;
+	}
+};
 
+var FileSystemController = module.exports = {
 	read : function(req, res){
 		var projectPath = req.params.projectPath;
-		var screenId = req.params.screenId;
-		var areaId = req.params.areaId;
 		var filename = req.params.filename || '';
-		var filepath = path.join(uploadBase, projectPath, screenId, areaId, filename);
+		var filepath = getRealFilepath(projectPath, filename);
 
 		// file or folder?
 		var info = fs.statSync(filepath);
@@ -36,10 +43,8 @@ var FileSystemController = module.exports = {
 
 	remove : function(req, res){
 		var projectPath = req.params.projectPath;
-		var screenId = req.params.screenId;
-		var areaId = req.params.areaId;
 		var filename = req.params.filename;
-		var filepath = path.join(uploadBase, projectPath, screenId, areaId, filename);
+		var filepath = getRealFilepath(projectPath, filename);
 
 		// file or folder?
 		var info = fs.statSync(filepath);
@@ -57,10 +62,8 @@ var FileSystemController = module.exports = {
 
 	upload : function(req, res){
 		var projectPath = req.params.projectPath;
-		var screenId = req.params.screenId;
-		var areaId = req.params.areaId;
 
-		var destDir = path.join(uploadBase, projectPath, screenId, areaId);
+		var destDir = getRealFilepath(projectPath);
 		fsExtra.mkdirsSync(destDir);
 		console.dir(req.file('file'));
 		console.log('uploading to : ' + destDir);

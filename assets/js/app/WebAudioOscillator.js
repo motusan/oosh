@@ -12,6 +12,14 @@ define('WebAudioOscillator', [], function(){
 		isPlayingMap[id] = oscIsPlaying;
 	};
 
+	var getAll = function(){
+		var all = [];
+		for(var id in oscillatorMap){
+			all.push(oscillatorMap[id]);
+		}
+		return all;
+	};
+
     // cfg = { id, frequency, gain, detune }
     var createOscillator = function(cfg){
         var oscillator = audioContext.createOscillator();
@@ -71,6 +79,8 @@ define('WebAudioOscillator', [], function(){
     };
 
     return {
+		get : getOscillator,
+
         play : function(cfg){
             // info = { id, freq, gain, detune }
             var oscillator = getOscillator(cfg.id);
@@ -102,6 +112,7 @@ define('WebAudioOscillator', [], function(){
 			setPlaying(cfg.id, false);
         },
 
-        change : change
+        change : change,
+		getAll : getAll
     };
 });

@@ -26,7 +26,7 @@ define('WebAudioBuffer', [], function(){
 			loadBufferFromFile(cfg.file, onBufferLoaded);
 		}
 		else if(cfg.url){
-			loadBufferFromUrl(cfg._context.area.id + '/' + cfg.url, onBufferLoaded);
+			loadBufferFromUrl(cfg.url, onBufferLoaded);
 		}
         return source;
     };
@@ -83,8 +83,7 @@ define('WebAudioBuffer', [], function(){
 	var loadBufferFromUrl = function(url, cb){
 		var projectManager = require('ProjectManager');
 		if(url.indexOf('http') !== 0){
-			url = '/file/get/' + projectManager.getProject().path +
-					'/' + projectManager.getScreenId() + '/' + url;
+			url = '/file/get/' + projectManager.getProject().path + '/' + url;
 		}
 		var audioBuffer = bufferCache[url];
 		if(audioBuffer){
@@ -115,10 +114,6 @@ define('WebAudioBuffer', [], function(){
     };
 
     return {
-		loadSample : function(cfg){
-			createBufferSource(cfg);
-		},
-
         play : function(cfg){
             // cfg = { id, freq, gain, detune }
             var source = createBufferSource(cfg);
@@ -134,6 +129,18 @@ define('WebAudioBuffer', [], function(){
 			}
         },
 
-        change : change
+        change : change,
+		getGain : getGain,
+		getBufferSource : getBufferSource,
+
+		getAllBufferSources : function(){
+			var all = [];
+			for(var id in sourceMap){
+				all.push(sourceMap[id]);
+			}
+			return all;
+		}
+
+
     };
 });

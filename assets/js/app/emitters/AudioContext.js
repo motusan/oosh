@@ -2,7 +2,7 @@ define({
     "displayName":"Audio Context",
     "emitterObjectName":"Audio Context",
     "getVia": {
-        "windowObject" : ["AudioContext", "webkitAudioContext"],
+        "windowObject" : [":AudioContext", ":webkitAudioContext"],
         "member" : "",
         "memberType" : "constructor",
         "returnType" : "returnValue",

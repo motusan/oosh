@@ -44,6 +44,10 @@ define('EventEmitterFactory', ['ValueResolver'], function(valueResolver){
             });
 
             var addProvidedObjectEventHandler = function(emitter, evConf){
+				if(typeof emitter != 'object'){
+					console.error('Emitter is not an object: ' + JSON.stringify(emitter));
+					return false;
+				}
                 var evName = typeof evConf == 'string' ? evConf : evConf.name;
                 emitter.addEventListener(evName, function(ev){
                     var eventProperties = {};

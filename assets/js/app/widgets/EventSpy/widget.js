@@ -37,7 +37,7 @@ define(['ValueFilter'], function(valueFilter){
                     "action":"screenLog",
                     "parameters": {
                         "event": {
-                            "input" : "event"
+                            "input" : ":event"
                         },
                     }
                 }]
@@ -46,7 +46,7 @@ define(['ValueFilter'], function(valueFilter){
 		filters : [
 			{
 				"exclude": {
-					"event:detail:properties:data:0":{
+					":event:detail:properties:data:0":{
 						"oneOf":[248, 254]
 					}
 				}

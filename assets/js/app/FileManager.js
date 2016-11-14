@@ -22,9 +22,7 @@ define('FileManager', ['ProjectManager',
 			opts.parent.append(filenameElement);
 
 			fileUploadElement.fileupload({
-				url : '/file/upload/' + (opts.projectId || projectManager.getProject().path) +
-						'/' + (opts.screenId || projectManager.getScreenId()) +
-						'/' + areaId,
+				url : '/file/upload/' + (opts.projectId || projectManager.getProject().path),
 				dataType: 'json',
 				paramName : 'file',
 				 progressall : function(ev, data){
@@ -53,8 +51,7 @@ define('FileManager', ['ProjectManager',
 		browse : function(path, cb){
 			currentDir = path;
 			jQuery.ajax({
-				url : '/file/get/' + (opts.projectId || projectManager.project.id) +
-						'/' + (opts.screenId || projectManager.screenId) + '/' + path,
+				url : '/file/get/' + (opts.projectId || projectManager.project.id) + '/' + path,
 				type : 'GET'
 			})
 			.complete(function(resp){

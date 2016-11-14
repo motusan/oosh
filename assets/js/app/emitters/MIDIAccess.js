@@ -2,7 +2,7 @@ define({
     "displayName":"MIDI Connect/Disconnect",
     "emitterObjectName":"MIDIAccess",
     "getVia": {
-        "windowObject" : "navigator",
+        "windowObject" : ":navigator",
         "member" : "requestMIDIAccess",
         "memberType" : "method",
         "memberParameters": false,
@@ -10,7 +10,7 @@ define({
     },
     "containedEmitters": [
         {
-            "container" : "inputs",
+            "container" : ":inputs",
             "emitterObjectName" : "port"
         }
     ],

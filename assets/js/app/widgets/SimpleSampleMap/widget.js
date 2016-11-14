@@ -72,9 +72,9 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
-                        "detail:properties:data[0]" : midiMessage.Constants.NoteOn,
-                        "detail:properties:data[1]" : { "lessThan" : 128 },
-                        "detail:properties:data[2]" : { "not" : 0 }
+                        ":detail:properties:data[0]" : midiMessage.Constants.NoteOn,
+                        ":detail:properties:data[1]" : { "lessThan" : 128 },
+                        ":detail:properties:data[2]" : { "not" : 0 }
                     }
                 },
                 "targets": [
@@ -82,10 +82,10 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 						"type": { "widget": "SimpleSampleMap" },
 						"action":"onMidiNoteOn",
 						"parameters": {
-							"midiNote" : { "input" : "event:detail:properties:data[1]" },
-							"rcvdTime" : { "input" : "event:detail:properties:receivedTime" },
-							"screenId": { "input" : "screenId" },
-							"areaId": { "input" : "area:id" }
+							"midiNote" : { "input" : ":event:detail:properties:data[1]" },
+							"rcvdTime" : { "input" : ":event:detail:properties:receivedTime" },
+							"screenId": { "input" : ":screenId" },
+							"areaId": { "input" : ":area:id" }
 						}
 					}
 				]
@@ -95,8 +95,8 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
-                        "detail:properties:data[0]" : 128,
-                        "detail:properties:data[1]" : { "lessThan" : 128 },
+                        ":detail:properties:data[0]" : 128,
+                        ":detail:properties:data[1]" : { "lessThan" : 128 },
                     }
                 },
                 "targets": [
@@ -108,7 +108,10 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 	                            "input" : "areaId"
 	                        },
 	                        "id": {
-	                            "input" : "event:detail:properties:data[1]"
+	                            "input" : ":event:detail:properties:data[1]",
+								"transform": [
+									{"prefix": "WebAudioBuffer-"}
+								]
 	                        }
 						}
 	                },
@@ -116,10 +119,10 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 	                    "type": { "widget": "SimpleSampleMap" },
 	                    "action":"onMidiNoteOff",
 	                    "parameters": {
-	                        "midiNote" : { "input" : "event:detail:properties:data[1]" },
-							"rcvdTime" : { "input" : "event:detail:properties:receivedTime" },
-	                        "screenId": { "input" : "screenId" },
-	                        "areaId": { "input" : "area:id" }
+	                        "midiNote" : { "input" : ":event:detail:properties:data[1]" },
+							"rcvdTime" : { "input" : ":event:detail:properties:receivedTime" },
+	                        "screenId": { "input" : ":screenId" },
+	                        "areaId": { "input" : ":area:id" }
 	                    }
 	                }
 				]
@@ -129,8 +132,8 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
-                        "detail:properties:data[1]" : { "lessThan" : 128 },
-                        "detail:properties:data[2]" : 0,
+                        ":detail:properties:data[1]" : { "lessThan" : 128 },
+                        ":detail:properties:data[2]" : 0,
                     }
                 },
                 "targets": [
@@ -139,10 +142,13 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 	                    "action":"stop",
 						"parameters": {
 							"areaId": {
-	                            "input" : "areaId"
+	                            "input" : ":areaId"
 	                        },
 	                        "id": {
-	                            "input" : "event:detail:properties:data[1]"
+	                            "input" : ":event:detail:properties:data[1]",
+								"transform": [
+									{"prefix": "WebAudioBuffer-"}
+								]
 	                        }
 						}
 	                },
@@ -150,10 +156,10 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 	                    "type": { "widget": "SimpleSampleMap" },
 	                    "action":"onMidiNoteOff",
 	                    "parameters": {
-	                        "midiNote" : { "input" : "event:detail:properties:data[1]" },
-							"rcvdTime" : { "input" : "event:detail:properties:receivedTime" },
-	                        "screenId": { "input" : "screenId" },
-	                        "areaId": { "input" : "area:id" }
+	                        "midiNote" : { "input" : ":event:detail:properties:data[1]" },
+							"rcvdTime" : { "input" : ":event:detail:properties:receivedTime" },
+	                        "screenId": { "input" : ":screenId" },
+	                        "areaId": { "input" : ":area:id" }
 	                    }
 	                }
 				]
@@ -162,7 +168,6 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 
 		onMidiNoteOn : function(params){
 			drawCellOverlay(params);
-			console.log('on: ', params.rcvdTime);
 			noteOnMap['note-' + params.midiNote] = params.rcvdTime;
         },
 
@@ -170,9 +175,6 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
             var cell = jQuery('#' + params.areaId + ' .note-' + params.midiNote);
 			jQuery('#cell-lbl-' + params.midiNote).remove();
             cell.removeClass('note-on');
-			console.log('off: ', params.rcvdTime);
-
-			console.log(params.rcvdTime - noteOnMap['note-' + params.midiNote]);
         },
 
 		onFilesDrop : function(files, areaId, target){
@@ -326,9 +328,9 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 				"event":{
 					"name": "oosh.midimessage",
 					"properties":{
-						"detail:properties:data[0]" : midiMessage.Constants.NoteOn,
-						"detail:properties:data[1]" : note,
-						"detail:properties:data[2]" : { "not" : "0" }
+						":detail:properties:data[0]" : midiMessage.Constants.NoteOn,
+						":detail:properties:data[1]" : note,
+						":detail:properties:data[2]" : { "not" : "0" }
 					}
 				},
 				"targets": [
@@ -338,13 +340,16 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 	                "parameters": {
 	                    "url" : file,
 						"areaId": {
-	                        "input" : "areaId"
+	                        "input" : ":areaId"
 	                    },
 	                    "id": {
-	                        "input" : "event:detail:properties:data[1]"
+	                        "input" : ":event:detail:properties:data[1]",
+							"transform": [
+								{"prefix": "WebAudioBuffer-"}
+							]
 	                    },
 	                    "gain" : {
-	                        "input" : "event:detail:properties:data[2]",
+	                        "input" : ":event:detail:properties:data[2]",
 	                        "transform":[ {"divide" : 127} ]
 	                    }
 	                }

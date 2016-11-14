@@ -2,7 +2,7 @@ define({
     "displayName":"Speech Recognition",
     "emitterObjectName":"SpeechRecognition",
     "getVia": {
-        "windowObject" : ["SpeechRecognition", "webkitSpeechRecognition"],
+        "windowObject" : [":SpeechRecognition", ":webkitSpeechRecognition"],
         "member" : "",
         "memberType" : "constructor",
         "returnType" : "returnValue",

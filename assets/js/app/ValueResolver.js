@@ -16,16 +16,27 @@ define('ValueResolver', [], function(){
 		 event:detail:properties:data[1]
          */
         resolve : function(str, inputMap, delimiter){
-            if(!delimiter){
-                delimiter = ':'; // had to switch to : due to Mongo issues with dot notation in attribute names
-            }
             if(typeof str == 'number'){
                 return str;
             }
+			if(typeof str !== 'string'){
+				console.error('not a string: ' + JSON.stringify(str));
+				return false;
+			}
+			if(str.indexOf(':')!==0){
+				return str;
+			}
+			str = str.substr(1);
+
+            if(!delimiter){
+                delimiter = ':'; // had to switch to : due to Mongo issues with dot notation in attribute names
+            }
+
             var parts = str.split(delimiter);
 			if(parts.length===0){
 				parts = [str];
 			}
+
             var value = inputMap;
             while(parts.length > 0){
                 var part = parts.shift();

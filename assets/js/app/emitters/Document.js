@@ -2,7 +2,7 @@ define({
     "displayName":"Document",
     "emitterObjectName":"Document",
     "getVia": {
-        "windowObject" : "document",
+        "windowObject" : ":document",
         "member" : "",
         "memberType" : "property"
     },
