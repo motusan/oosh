@@ -1,12 +1,12 @@
 # oosh
 
-Oosh is a performance-oriented, hackable music-making platform.
+Oosh is a performance-oriented, hackable music-making platform built on [Node](https://nodejs.org/), [Sails](http://sailsjs.org/), [Mongo](https://www.mongodb.com/),
+SocketIO, WebAudio and WebMIDI. It's not Ableton. It's not trying to be. Don't expect it to be.
 
 * _performance-oriented_: set it up to be easy to play within a live performance setting. Do it your way.
 * _hackable_: all configuration and data is in JSON. Create widgets to more easily view and modify configuration and performance data or drill down into it and hack it directly using the built-in JSON editor.
 
-Built on [Node](https://nodejs.org/), [Sails](http://sailsjs.org/), [Mongo](https://www.mongodb.com/),
-SocketIO, WebAudio and WebMIDI.
+
 
 ## Concepts
 
