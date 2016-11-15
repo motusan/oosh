@@ -10,9 +10,9 @@ define(function(){
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
-                        "detail:properties:data[0]" : "144",
-                        "detail:properties:data[1]" : { "lessThan" : 72 },
-                        "detail:properties:data[2]" : { "not" : "0" }
+                        ":detail:properties:data[0]" : "144",
+                        ":detail:properties:data[1]" : { "lessThan" : 72 },
+                        ":detail:properties:data[2]" : { "not" : "0" }
                     }
                 },
                 "targets": [{
@@ -20,16 +20,16 @@ define(function(){
                     "action":"play",
                     "parameters": {
                         "id": {
-                            "input" : "event:detail:properties:data[1]"
+                            "input" : ":event:detail:properties:data[1]"
                         },
                         "type" : "sine",
                         "detune" : 0,
                         "gain" : {
-                            "input" : "event:detail:properties:data[2]",
+                            "input" : ":event:detail:properties:data[2]",
                             "transform":[ {"divide" : 127} ]
                         },
                         "frequency" : {
-                            "input" : "event:detail:properties:data[1]",
+                            "input" : ":event:detail:properties:data[1]",
                             "transform":[
                                 {"subtract": 69},
                                 {"exponentOf": 1.059463094359},
@@ -43,7 +43,7 @@ define(function(){
                     "action":"play",
                     "parameters": {
                         "id": {
-                            "input" : "event:detail:properties:data[1]",
+                            "input" : ":event:detail:properties:data[1]",
                             "transform": [
                                 {"prefix": "osc2"}
                             ]
@@ -51,11 +51,11 @@ define(function(){
                         "type" : "square",
                         "detune" : 0,
                         "gain" : {
-                            "input" : "event:detail:properties:data[2]",
+                            "input" : ":event:detail:properties:data[2]",
                             "transform":[ {"divide" : 127} ]
                         },
                         "frequency" : {
-                            "input" : "event:detail:properties:data[1]",
+                            "input" : ":event:detail:properties:data[1]",
                             "transform":[
                                 {"subtract": 69},
                                 {"exponentOf": 1.059463094359},
@@ -68,9 +68,9 @@ define(function(){
                     "type": { "widget": "MidiOscTrigger" },
                     "action":"onKbdDown",
                     "parameters": {
-                        "midiNote" : { "input" : "event:detail:properties:data[1]" },
-                        "screenId": { "input" : "screenId" },
-                        "areaId": { "input" : "area:id" }
+                        "midiNote" : { "input" : ":event:detail:properties:data[1]" },
+                        "screenId": { "input" : ":screenId" },
+                        "areaId": { "input" : ":area:id" }
                     }
                 }]
             },
@@ -80,8 +80,8 @@ define(function(){
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
-                        "detail:properties:data[0]" : "128",
-                        "detail:properties:data[1]" : { "lessThan" : 72 }
+                        ":detail:properties:data[0]" : "128",
+                        ":detail:properties:data[1]" : { "lessThan" : 72 }
                     }
                 },
                 "targets": [{
@@ -89,7 +89,7 @@ define(function(){
                     "action":"stop",
                     "parameters": {
                         "id": {
-                            "input" : "event:detail:properties:data[1]"
+                            "input" : ":event:detail:properties:data[1]"
                         }
                     }
                 },
@@ -98,7 +98,7 @@ define(function(){
                     "action":"stop",
                     "parameters": {
                         "id": {
-                            "input" : "event:detail:properties:data[1]",
+                            "input" : ":event:detail:properties:data[1]",
                             "transform": [
                                 {"prefix":"osc2"}
                             ]
@@ -109,9 +109,9 @@ define(function(){
                     "type": { "widget": "MidiOscTrigger" },
                     "action":"onKbdUp",
                     "parameters": {
-                        "midiNote" : { "input" : "event:detail:properties:data[1]" },
-                        "screenId": { "input" : "screenId" },
-                        "areaId": { "input" : "area:id" }
+                        "midiNote" : { "input" : ":event:detail:properties:data[1]" },
+                        "screenId": { "input" : ":screenId" },
+                        "areaId": { "input" : ":area:id" }
                     }
                 }]
             },
@@ -121,9 +121,9 @@ define(function(){
                 "event":{
                     "name": "oosh.midimessage",
                     "properties":{
-                        "detail:properties:data[0]" : "144",
-                        "detail:properties:data[1]" : { "lessThan" : 72 },
-                        "detail:properties:data[2]" : "0"
+                        ":detail:properties:data[0]" : "144",
+                        ":detail:properties:data[1]" : { "lessThan" : 72 },
+                        ":detail:properties:data[2]" : "0"
                     }
                 },
                 "targets": [{
@@ -131,7 +131,7 @@ define(function(){
                     "action":"stop",
                     "parameters": {
                         "id": {
-                            "input" : "event:detail:properties:data[1]"
+                            "input" : ":event:detail:properties:data[1]"
                         }
                     }
                 },
@@ -139,9 +139,9 @@ define(function(){
                     "type": { "widget": "MidiOscTrigger" },
                     "action":"onKbdUp",
                     "parameters": {
-                        "midiNote" : { "input" : "event:detail:properties:data[1]" },
-                        "screenId": { "input" : "screenId" },
-                        "areaId": { "input" : "area:id" }
+                        "midiNote" : { "input" : ":event:detail:properties:data[1]" },
+                        "screenId": { "input" : ":screenId" },
+                        "areaId": { "input" : ":area:id" }
                     }
                 }]
             }

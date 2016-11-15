@@ -61,12 +61,12 @@ define(['ValueFilter'], function(valueFilter){
 
     var publicMembers = {
         "id" : "Learner",
-        "name" : "Learner",
+        "name" : "Learner/Looper",
         "description" : "Captures events for input to another widget (e.g., to replay at a later time).",
         "template" : "main",
         "triggers" : [
             {
-                "name":"FiredEvent",
+                "name":"LearnableEvent",
                 "event":{
                     "name": "*",
                 },
@@ -78,6 +78,54 @@ define(['ValueFilter'], function(valueFilter){
                             "input" : ":event"
                         },
                     }
+                }]
+            },
+			{
+                "name":"StartLearningEvent",
+                "event":{ "name": "oosh.keydown", "detail:properties:code": ["ControlLeft","ControlRight"] },
+                "targets": [{
+                    "type": { "widget": "Learner" },
+                    "action":"startLearning"
+                }]
+            },
+			{
+                "name":"StopLearningEvent",
+                "event":{ "name": "oosh.keyup", "detail:properties:code": ["ControlLeft","ControlRight"] },
+                "targets": [{
+                    "type": { "widget": "Learner" },
+                    "action":"stopLearning"
+                }]
+            },
+			{
+                "name":"StartPlayingEvent",
+                "event":{ "name": "oosh.keydown", "detail:properties:code": ["AltLeft","AltRight"] },
+                "targets": [{
+                    "type": { "widget": "Learner" },
+                    "action":"startPlaying"
+                }]
+            },
+			{
+                "name":"StopPlayingEvent",
+                "event":{ "name": "oosh.keydown", "detail:properties:code": ["AltLeft","AltRight"] },
+                "targets": [{
+                    "type": { "widget": "Learner" },
+                    "action":"stopPlaying"
+                }]
+            },
+			{
+                "name":"LearnTogglingEvent",
+                "event":{ "name": "*" },
+                "targets": [{
+                    "type": { "widget": "Learner" },
+                    "action":"toggleLearnMode"
+                }]
+            },
+			{
+                "name":"PlayTogglingEvent",
+                "event":{ "name": "*" },
+                "targets": [{
+                    "type": { "widget": "Learner" },
+                    "action":"togglePlayMode"
                 }]
             }
         ],
@@ -102,7 +150,7 @@ define(['ValueFilter'], function(valueFilter){
 			return isLearnMode;
 		},
 
-		startLearning : function(opts){
+		startLearning : function(){
 			if(isPlayMode){
 				return false;
 			}
