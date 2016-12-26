@@ -222,6 +222,11 @@ define('ProjectManager', ['SocketService', 'Trigger', 'AreaManager', 'OoshJsonEd
         },
 
 		findScreenArea : function(screen, areaId){
+			var pm = require('ProjectManager');
+			if(!areaId && typeof screen == 'string'){
+				areaId = screen;
+				screen = pm.getLocalScreen();
+			}
             var foundAreaNdx = screen.areas.findIndex(function(testArea){
                 return testArea.id == areaId;
             });

@@ -83,7 +83,7 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 						"action":"onMidiNoteOn",
 						"parameters": {
 							"midiNote" : { "input" : ":event:detail:properties:data[1]" },
-							"rcvdTime" : { "input" : ":event:detail:properties:receivedTime" },
+							"rcvdTime" : { "input" : ":event:detail:properties:timeStamp" },
 							"screenId": { "input" : ":screenId" },
 							"areaId": { "input" : ":area:id" }
 						}
@@ -120,7 +120,7 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 	                    "action":"onMidiNoteOff",
 	                    "parameters": {
 	                        "midiNote" : { "input" : ":event:detail:properties:data[1]" },
-							"rcvdTime" : { "input" : ":event:detail:properties:receivedTime" },
+							"rcvdTime" : { "input" : ":event:detail:properties:timeStamp" },
 	                        "screenId": { "input" : ":screenId" },
 	                        "areaId": { "input" : ":area:id" }
 	                    }
@@ -157,7 +157,7 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 	                    "action":"onMidiNoteOff",
 	                    "parameters": {
 	                        "midiNote" : { "input" : ":event:detail:properties:data[1]" },
-							"rcvdTime" : { "input" : ":event:detail:properties:receivedTime" },
+							"rcvdTime" : { "input" : ":event:detail:properties:timeStamp" },
 	                        "screenId": { "input" : ":screenId" },
 	                        "areaId": { "input" : ":area:id" }
 	                    }
@@ -195,7 +195,6 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 
 			var createOnLoadFn = function(file){
 				return function(ev){
-					//SimpleSampleMap.onAudioDataLoaded(ev.target.result, areaId);
 					var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
 					var trigger = simpleSampleMap.createTrigger({
 						file : file.name,
@@ -229,7 +228,7 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 				type : file.type,
 				size : file.size
 			});
-			pm.updateScreenArea(areaConf);
+			//pm.updateScreenArea(areaConf);
 		},
 
 		loadWidgetFiles : function(areaId){
@@ -264,6 +263,7 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 		},
 
         initializeWidget : function(params){
+			console.log('SimpleSampleMap.initializeWidget');
 			var simpleSampleMap = require('widgets/SimpleSampleMap/widget');
 			var fm = require('FileManager');
 
@@ -281,7 +281,7 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 			});
 
 			cells.on('drop', function(ev){
-				console.dir('ev: ', ev);
+				console.dir('SimpleSampleMap.drop');
 				ev.preventDefault();
 				ev.stopPropagation();
 				var files = ev.originalEvent.dataTransfer.files;
@@ -308,6 +308,7 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 				areaId : params.areaId,
 				parent : area.find('.simplesamplemap'),
 				onFileChange : function(ev, data){
+					console.log('SimpleSampleMap.initializeWidget -> fm.add -> onFileChange');
 					simpleSampleMap.addWidgetFiles(data.files, params.areaId);
 					simpleSampleMap.onFilesDrop(data.files, params.areaId, ev.delegatedEvent.target);
 				}
@@ -318,6 +319,7 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 
 
 		createTrigger : function(opts){
+			console.log('simpleSampleMap.createTrigger');
 			var note = opts.note;
 			var file = opts.file;
 			var playbackRate = opts.playbackRate || 0.063;

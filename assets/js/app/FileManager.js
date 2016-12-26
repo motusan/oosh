@@ -9,6 +9,7 @@ define('FileManager', ['ProjectManager',
 
 	return {
 		add : function(opts){
+			console.log('FileManager.add');
 			options = opts;
 			var parent = opts.parent;
 			var areaId = opts.areaId;
@@ -25,11 +26,11 @@ define('FileManager', ['ProjectManager',
 				url : '/file/upload/' + (opts.projectId || projectManager.getProject().path),
 				dataType: 'json',
 				paramName : 'file',
-				 progressall : function(ev, data){
+				progressall : function(ev, data){
 					 var progress = parseInt(data.loaded / data.total * 100, 10);
 					 uploadProgressElement.text(progress + '% complete');
 					 console.log(progress);
-				 }
+				}
 			});
 			fileUploadElement.bind('fileuploaddrop', function (ev, data){
 				if(typeof onFileChange == 'function'){

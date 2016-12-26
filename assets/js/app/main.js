@@ -49,6 +49,7 @@ requirejs([
 					console.error(project.error);
 					return false;
 				}
+				jQuery('#currentProject').text(' - ' + project.name);
 			});
 		}
 		else{

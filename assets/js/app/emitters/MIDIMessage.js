@@ -7,7 +7,7 @@ define({
     "events":[
         {
             "name":"midimessage",
-            "properties": ["target", "data", "receivedTime"]
+            "properties": ["target", "data", "timeStamp"]
         }
     ]
 });

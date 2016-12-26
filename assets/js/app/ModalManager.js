@@ -33,6 +33,7 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
                                 console.error(project.error);
                                 return false;
                             }
+							jQuery('#currentProject').text(' - ' + project.name);
                             Oosh.dismissModal('project-list');
                         });
                     });
