@@ -9,7 +9,7 @@ define({
             "event":{
                 "name": "oosh.keydown",
                 "properties":{
-                    "detail:properties:code": ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF",
+                    ":detail:properties:code": ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF",
                             "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO",
                             "KeyL", "KeyP", "Semicolon", "Quote"]
                 }
@@ -19,13 +19,13 @@ define({
                 "action":"play",
                 "parameters": {
                     "id": {
-                        "input" : "event:detail:properties:code"
+                        "input" : ":event:detail:properties:code"
                     },
                     "type" : "triangle",
                     "detune" : 0,
                     "gain" : 1,
                     "frequency" : {
-                        "input" : "event:detail:properties:code",
+                        "input" : ":event:detail:properties:code",
                         "transform":[
                             {
                                 "map": {
@@ -48,7 +48,7 @@ define({
             "event":{
                 "name": "oosh.keyup",
                 "properties":{
-                    "detail:properties:code": ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF",
+                    ":detail:properties:code": ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF",
                             "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO",
                             "KeyL", "KeyP", "Semicolon", "Quote"]
                 }
@@ -58,7 +58,7 @@ define({
                 "action": "stop",
                 "parameters": {
                     "id": {
-                        "input" : "event:detail:properties:code"
+                        "input" : ":event:detail:properties:code"
                     }
                 }
             }]
