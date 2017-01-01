@@ -16,7 +16,6 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
 				});
 			});
         },
-
         'project-list': function(){
             projectManager.getProjectList(function(list){
                 var projectList = jQuery('.project-list');
@@ -110,17 +109,77 @@ define('ModalManager', ['jquery', 'OoshJsonEditor', 'Preferences', 'ProjectManag
         onDlgFn(data);
     };
 
+	var prepareDialog = function(dlg){
+		dlg.modal({
+			backdrop : 'static',
+			keyboard : true
+		});
+		dlg.on('hidden.bs.modal', function(){
+			dlg.find('button').off('click');
+		});
+	};
+
     var publicMethods = {
+		showGeneric : function(opts){
+			var title = opts.title;
+			var selector = opts.selector;
+			var template = opts.template;
+			var okCallback = opts.ok;
+			var cancelCallback = opts.cancel;
+			var buttons = opts.buttons;
+			var dlg = false;
+			var p = new Promise(function(resolve, reject){
+				try{
+					if(selector){
+						dlg = jQuery(selector);
+					}
+					else{
+						dlg = jQuery('.generic-dialog');
+						dlg.empty();
+					}
+
+					prepareDialog(dlg);
+					jQuery('.modal-backdrop').css('z-index', 0);
+
+					// overridden if a template is used
+					if(title){
+						dlg.find('.modal-title').text(title);
+					}
+
+					if(buttons){
+						var footer = dlg.find('.modal-footer');
+						footer.empty();
+						buttons.forEach(function(btn){
+							footer.append('<button type="button" class="btn btn-primary btn-' + btn.name +
+									'" data-dismiss="modal">' + btn.label + '</button>');
+						});
+					}
+					if(typeof okCallback == 'function'){
+						dlg.find('.btn-save,.btn-ok').on('click', okCallback);
+					}
+					if(typeof cancelCallback == 'function'){
+						dlg.find('.btn-close,.btn-cancel').on('click', cancelCallback);
+					}
+					if(template){
+						jQuery.get(template, function(result){
+							dlg.html(result);
+							return resolve(dlg);
+						});
+					}
+					else{
+						return resolve(dlg);
+					}
+				}
+				catch(e){
+					reject(e);
+				}
+			});
+			return p;
+		},
+
         showModal : function(dlgName, data){
             var dlg = jQuery('.' + dlgName + '-dialog');
-            dlg.modal({
-                backdrop : 'static',
-				keyboard : true
-            });
-            dlg.on('hidden.bs.modal', function(){
-                dlg.find('.btn-save').off('click');
-                dlg.find('.btn-close').off('click');
-            });
+            prepareDialog(dlg);
             onModalDisplay(dlgName, data);
         },
 

@@ -82,7 +82,7 @@ define(['ValueFilter'], function(valueFilter){
             },
 			{
                 "name":"StartLearningEvent",
-                "event":{ "name": "oosh.keydown", "detail:properties:code": ["ControlLeft","ControlRight"] },
+                "event":{ "name": "oosh.keydown", ":detail:properties:code": ["ControlLeft","ControlRight"] },
                 "targets": [{
                     "type": { "widget": "Learner" },
                     "action":"startLearning"
@@ -90,7 +90,7 @@ define(['ValueFilter'], function(valueFilter){
             },
 			{
                 "name":"StopLearningEvent",
-                "event":{ "name": "oosh.keyup", "detail:properties:code": ["ControlLeft","ControlRight"] },
+                "event":{ "name": "oosh.keyup", ":detail:properties:code": ["ControlLeft","ControlRight"] },
                 "targets": [{
                     "type": { "widget": "Learner" },
                     "action":"stopLearning"
@@ -98,7 +98,7 @@ define(['ValueFilter'], function(valueFilter){
             },
 			{
                 "name":"StartPlayingEvent",
-                "event":{ "name": "oosh.keydown", "detail:properties:code": ["AltLeft","AltRight"] },
+                "event":{ "name": "oosh.keydown", ":detail:properties:code": ["AltLeft","AltRight"] },
                 "targets": [{
                     "type": { "widget": "Learner" },
                     "action":"startPlaying"
@@ -106,7 +106,7 @@ define(['ValueFilter'], function(valueFilter){
             },
 			{
                 "name":"StopPlayingEvent",
-                "event":{ "name": "oosh.keydown", "detail:properties:code": ["AltLeft","AltRight"] },
+                "event":{ "name": "oosh.keydown", ":detail:properties:code": ["AltLeft","AltRight"] },
                 "targets": [{
                     "type": { "widget": "Learner" },
                     "action":"stopPlaying"
@@ -159,10 +159,11 @@ define(['ValueFilter'], function(valueFilter){
 			var ts = (new Date()).getTime();
 			events.push({ event : 'start', timestamp : ts });
 
+			/*
 			toggleLearnButton.text('Stop Learning')
-				.removeClass('start-learning')
-				.addClass('stop-learning');
-
+					.removeClass('start-learning')
+					.addClass('stop-learning');
+			*/
 			return true;
 		},
 
@@ -196,7 +197,7 @@ define(['ValueFilter'], function(valueFilter){
             var msgEl = area.find('.messages');
             msgEl.append('<div class="message">' + ev.screenId + ':' + ev.event + ':' +
                     JSON.stringify(ev.detail ? ev.detail.properties : ev) + '</div>');
-            msgEl.scrollTop(msgEl.scrollTop() + msgEl.find('.message:last').position().top);
+            //msgEl.scrollTop(msgEl.scrollTop() + msgEl.find('.message:last').position().top);
 
 			var ts = (new Date()).getTime();
 			events.push({ event : ev, timestamp : ts });
@@ -243,19 +244,21 @@ define(['ValueFilter'], function(valueFilter){
 		},
 
         initializeWidget : function(params){
-			var pm = require('ProjectManager');
-			areaId = params.areaId;
-			var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
-			if(areaConf.widget.configuration.events){
-				events = areaConf.widget.configuration.events;
-			}
+			jQuery(document).ready(function(){
+				var pm = require('ProjectManager');
+				areaId = params.areaId;
+				var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
+				if(areaConf.widget.configuration.events){
+					events = areaConf.widget.configuration.events;
+				}
 
-			area = jQuery('#' + params.areaId);
-			toggleLearnButton = area.find('button.toggle-learn-mode');
-			togglePlayButton = area.find('button.toggle-play-mode');
+				area = jQuery('#' + params.areaId);
+				toggleLearnButton = area.find('button.toggle-learn-mode');
+				togglePlayButton = area.find('button.toggle-play-mode');
 
-			toggleLearnButton.on('click', publicMembers.toggleLearnMode);
-			togglePlayButton.on('click', publicMembers.togglePlayMode);
+				toggleLearnButton.on('click', publicMembers.toggleLearnMode);
+				togglePlayButton.on('click', publicMembers.togglePlayMode);
+			});
 		}
     };
 	return publicMembers;

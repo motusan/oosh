@@ -25,7 +25,7 @@
 }
 
 .widget.simplesamplemap table td a:hover {
-	background-color: yellow;
+	background-color: #ffbbbb ! important;
 }
 
 .widget.simplesamplemap table td a.dragover {
@@ -54,6 +54,31 @@ body .cell-label a {
 	height: 100%;
 	width: 100%;
 }
+
+.target-list td {
+	padding: 5px;
+}
+
+.widget.simplesamplemap table td.has-target {
+	background-color: #bbbbff;
+}
+
+.control-label {
+	padding: 2px;
+	margin-top: 10px;
+	font-weight: bold;
+	color: #666;
+}
+
+.trigger-name {
+	height: 30px;
+}
+
+.target-list {
+	height: 200px;
+}
 </style>
 <div class="widget simplesamplemap">
+	<div class="sample-url non-editable"></div>
+	<table class="note-table"><tbody></tbody></table>
 </div>

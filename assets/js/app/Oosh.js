@@ -23,12 +23,16 @@ function(eventEmitterFactory, widgetFactory, projectManager,
         //eventEmitterFactory : eventEmitterFactory,
         //widgetFactory : widgetFactory,
 
+        showGeneric : function(opts){
+            return modalManager.showGeneric(opts);
+        },
+
         showModal : function(dlgName, data){
-            modalManager.showModal(dlgName, data);
+            return modalManager.showModal(dlgName, data);
         },
 
         show : function(dlgName, data){
-            modalManager.show(dlgName, data);
+            return modalManager.show(dlgName, data);
         },
 
         dismissModal : function(dlgName){
@@ -87,6 +91,10 @@ function(eventEmitterFactory, widgetFactory, projectManager,
                 password : pwd,
                 callback : loadedCallback
             });
-        }
+        },
+
+		getProject : function(){
+			return projectManager.getProject();
+		}
     };
 });

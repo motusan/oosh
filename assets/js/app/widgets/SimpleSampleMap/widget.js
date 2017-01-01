@@ -1,4 +1,4 @@
-define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
+define(['ValueFilter', 'MIDIMessage', 'ProjectManager'], function(valueFilter, midiMessage, projectManager){
 	var audioContext = new (window.AudioContext || window.webkitAudioContext)();
 	var source = null;
 	var noteOnMap = {};
@@ -23,6 +23,97 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 
 		ev.preventDefault();
 		ev.stopPropagation();
+	};
+
+	var onMidiNoteOn = function(params){
+		drawCellOverlay(params);
+		noteOnMap['note-' + params.midiNote] = params.rcvdTime;
+    };
+
+	var onMidiNoteOff = function(params){
+        var cell = jQuery('#' + params.areaId + ' .note-' + params.midiNote);
+		jQuery('#cell-lbl-' + params.midiNote).remove();
+        cell.removeClass('note-on');
+    };
+
+	var onFilesDrop = function(files, areaId, target){
+		var note = false;
+		console.log('onFilesDrop');
+
+		if(target){
+			var cls = jQuery(target).attr('class');
+			if(!cls){
+				var id = jQuery(target).parent().attr('id');
+				note = id.split('-')[2];
+			}
+			else{
+				note = cls.split('-')[1];
+			}
+		}
+
+		var createOnLoadFn = function(file){
+			return function(ev){
+				var areaConf = projectManager.findScreenArea(projectManager.getLocalScreen(), areaId);
+				var trigger = createTrigger({
+					file : file.name,
+					note : note
+				});
+				areaConf.widget.configuration.triggers.push(trigger);
+				projectManager.updateScreenArea(areaConf);
+			};
+		};
+
+		for(var i = 0; i<files.length; i++){
+			var file = files[i];
+			var reader = new FileReader();
+		    reader.onload = createOnLoadFn(file);
+		    reader.readAsArrayBuffer(file);
+		}
+	};
+
+	var addWidgetFiles = function(files, areaId){
+		var file = files[0];
+		var areaConf = projectManager.findScreenArea(projectManager.getLocalScreen(), areaId);
+		var widgetFiles = areaConf.widget.configuration.files;
+		if(!widgetFiles){
+			areaConf.widget.configuration.files = [];
+			widgetFiles = areaConf.widget.configuration.files;
+		}
+		widgetFiles.push({
+			filename : file.name,
+			type : file.type,
+			size : file.size
+		});
+		//projectManager.updateScreenArea(areaConf);
+	};
+
+	var loadWidgetFiles = function(areaId){
+		var fm = require('FileManager');
+		var project = projectManager.getProject();
+		var screen = projectManager.getLocalScreen();
+		var areaConf = projectManager.findScreenArea(screen, areaId);
+		if(!areaConf.widget || !areaConf.widget.configuration){
+			return false;
+		}
+		var widgetFiles = areaConf.widget.configuration.files;
+		if(widgetFiles){
+			var filename = widgetFiles[0].filename;
+
+			jQuery('#' + areaId + ' .uploaded-filename').text(filename);
+		}
+	};
+
+	var drawGrid = function(area){
+		var note = 0;
+		var tbody = area.find('.note-table tbody');
+		for(var i=0; i<8; i++){
+			var row = jQuery('<tr></tr>');
+			tbody.append(row);
+			for(var j=0; j<16; j++){
+				row.append('<td class="note-' + note + ' note"><a href="#"></a></td>');
+				note++;
+			}
+		}
 	};
 
 	var drawCellOverlay = function(params){
@@ -61,6 +152,107 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 		cell.removeClass('note-on');
 	};
 
+	var markTriggerCells = function(areaId){
+		var areaConf = projectManager.findScreenArea(projectManager.getLocalScreen(), areaId).widget.configuration;
+		areaConf.triggers.forEach(function(trigger){
+			if(trigger.name && trigger.name.startsWith('oosh.midimessage.')){
+				var targetNdx = trigger.event.properties[':detail:properties:data[1]'];
+				var cell = jQuery('td.note-' + targetNdx);
+				cell.data('trigger', trigger);
+				if(trigger.targets.length > 0){
+					cell.addClass('has-target');
+				}
+			}
+		});
+	};
+
+	var doTriggerEditorDialog = function(areaId, trigger){
+		Oosh.showGeneric({
+			//selector : '#' + areaId + ' .trigger-editor',
+			template : '/js/app/widgets/SimpleSampleMap/TriggerEditor.html',
+			buttons : [{ name : 'ok', label : 'OK'}, { name : 'close', label : 'Close'}],
+			ok : function(){
+				console.log('ok');
+			},
+			cancel : function(){
+				console.log('cancel');
+			}
+		})
+		.then(function(dlg){
+			dlg.find('.trigger-name').text(trigger.name);
+			var list = dlg.find('.target-list table tbody');
+			list.empty();
+			trigger.targets.forEach(function(target){
+				var tr = jQuery('<tr><td><a href="#">' + target.parameters.url +
+						'</a><td><td><a href="#" class="remove-target"><i class="fa fa-trash"></i></a></td></tr>');
+				list.append(tr);
+				var a = tr.find('a.remove-target');
+				a.data('target', target);
+				a.on('click', function(ev){
+					var a = jQuery(this);
+					var areaConf = projectManager.findScreenArea(projectManager.getLocalScreen(),
+							areaId).widget.configuration;
+					var foundNdx = areaConf.triggers.findIndex(function(found){
+						return found.name == trigger.name;
+					});
+					if(foundNdx > -1){
+						var foundTrigger = areaConf.triggers[foundNdx];
+						var foundNdx2 = foundTrigger.targets.findIndex(function(found){
+							return found.parameters.url == target.parameters.url;
+						});
+						delete foundTrigger.targets[foundNdx2];
+						a.parentsUntil('tr').parent().remove();
+						markTriggerCells(areaId);
+					}
+				});
+			});
+		});
+	};
+
+	var createTrigger = function(opts){
+		console.log('simpleSampleMap.createTrigger');
+		var note = opts.note;
+		var file = opts.file;
+		var playbackRate = opts.playbackRate || 0.063;
+		var detune = opts.detune || 100.0;
+
+		var trigger = {
+			"name":"oosh.midimessage." + note,
+			"event":{
+				"name": "oosh.midimessage",
+				"properties":{
+					":detail:properties:data[0]" : midiMessage.Constants.NoteOn,
+					":detail:properties:data[1]" : note,
+					":detail:properties:data[2]" : { "not" : "0" }
+				}
+			},
+			"targets": [
+			{
+				"type": "WebAudioBuffer",
+				"action":"play",
+				"parameters": {
+					"url" : file,
+					"areaId": {
+						"input" : ":areaId"
+					},
+					"id": {
+						"input" : ":event:detail:properties:data[1]",
+						"transform": [
+							{"prefix": "WebAudioBuffer-"}
+						]
+					},
+					"gain" : {
+						"input" : ":event:detail:properties:data[2]",
+						"transform":[ {"divide" : 127} ]
+					}
+				}
+			}]
+		};
+
+		return trigger;
+	};
+
+	// public -------------------------------------------
     return {
         "id" : "SimpleSampleMap",
         "name" : "SimpleSampleMap",
@@ -166,112 +358,14 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 			}
 		],
 
-		onMidiNoteOn : function(params){
-			drawCellOverlay(params);
-			noteOnMap['note-' + params.midiNote] = params.rcvdTime;
-        },
-
-		onMidiNoteOff : function(params){
-            var cell = jQuery('#' + params.areaId + ' .note-' + params.midiNote);
-			jQuery('#cell-lbl-' + params.midiNote).remove();
-            cell.removeClass('note-on');
-        },
-
-		onFilesDrop : function(files, areaId, target){
-			var simpleSampleMap = require('widgets/SimpleSampleMap/widget');
-			var pm = require('ProjectManager');
-			var note = false;
-
-			if(target){
-				var cls = jQuery(target).attr('class');
-				if(!cls){
-					var id = jQuery(target).parent().attr('id');
-					note = id.split('-')[2];
-				}
-				else{
-					note = cls.split('-')[1];
-				}
-			}
-
-			var createOnLoadFn = function(file){
-				return function(ev){
-					var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
-					var trigger = simpleSampleMap.createTrigger({
-						file : file.name,
-						note : note
-					});
-					areaConf.widget.configuration.triggers.push(trigger);
-					pm.updateScreenArea(areaConf);
-				};
-			};
-
-			for(var i = 0; i<files.length; i++){
-				var file = files[i];
-				var reader = new FileReader();
-			    reader.onload = createOnLoadFn(file);
-			    reader.readAsArrayBuffer(file);
-			}
-		},
-
-
-		addWidgetFiles : function(files, areaId){
-			var file = files[0];
-			var pm = require('ProjectManager');
-			var areaConf = pm.findScreenArea(pm.getLocalScreen(), areaId);
-			var widgetFiles = areaConf.widget.configuration.files;
-			if(!widgetFiles){
-				areaConf.widget.configuration.files = [];
-				widgetFiles = areaConf.widget.configuration.files;
-			}
-			widgetFiles.push({
-				filename : file.name,
-				type : file.type,
-				size : file.size
-			});
-			//pm.updateScreenArea(areaConf);
-		},
-
-		loadWidgetFiles : function(areaId){
-			var pm = require('ProjectManager'), fm = require('FileManager');
-			var SimpleSampleMap = require('widgets/SimpleSampleMap/widget');
-			var project = pm.getProject();
-			var screen = pm.getLocalScreen();
-			var areaConf = pm.findScreenArea(screen, areaId);
-			if(!areaConf.widget || !areaConf.widget.configuration){
-				return false;
-			}
-			var widgetFiles = areaConf.widget.configuration.files;
-			if(widgetFiles){
-				var filename = widgetFiles[0].filename;
-
-				jQuery('#' + areaId + ' .uploaded-filename').text(filename);
-			}
-		},
-
-		drawGrid : function(area){
-			var note = 0;
-			area.find('.widget').append('<table><tbody></tbody></table>');
-			var tbody = area.find('tbody');
-			for(var i=0; i<8; i++){
-				var row = jQuery('<tr></tr>');
-				tbody.append(row);
-				for(var j=0; j<16; j++){
-					row.append('<td class="note-' + note + '"><a href="#"></a></td>');
-					note++;
-				}
-			}
-		},
-
         initializeWidget : function(params){
-			console.log('SimpleSampleMap.initializeWidget');
-			var simpleSampleMap = require('widgets/SimpleSampleMap/widget');
 			var fm = require('FileManager');
-
-			//SimpleSampleMap.loadTriggers(params.areaId);
-
-			var area = jQuery('#' + params.areaId);
-			simpleSampleMap.drawGrid(area);
+			var areaId = params.areaId;
+			var cellSelector = '#' + areaId + ' .note-table td';
+			var area = jQuery('#' + areaId);
+			drawGrid(area);
 			var cells = area.find('table td a, body .cell-label');
+
 			cells.on('dragover', function(ev){
 				cells.removeClass('dragover');
 				jQuery(this).addClass('dragover');
@@ -280,15 +374,40 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 				cells.removeClass('dragover');
 			});
 
+
+			jQuery('body').on('click', cellSelector, function(ev){
+				var cell = jQuery(this);
+				var trigger = cell.data('trigger');
+				console.dir(trigger);
+				doTriggerEditorDialog(areaId, trigger);
+			});
+
+			jQuery('body').on('mouseover', cellSelector, function(ev){
+				var cell = jQuery(this);
+				var trigger = cell.data('trigger');
+				if(!trigger){
+					return;
+				}
+				var urls = trigger.targets.map(function(target){
+					return !target || !target.parameters ?
+							'' : target.parameters.url || '';
+				});
+
+				area.find('.sample-url').text(trigger.name + ': ' + urls.join(', '));
+			});
+
+			jQuery('body').on('mouseout', cellSelector, function(ev){
+				area.find('.sample-url').text('Mouse over a cell to view triggered samples or click a cell to edit');
+			});
+
 			cells.on('drop', function(ev){
-				console.dir('SimpleSampleMap.drop');
 				ev.preventDefault();
 				ev.stopPropagation();
 				var files = ev.originalEvent.dataTransfer.files;
-				simpleSampleMap.onFilesDrop(files, params.areaId, ev.target);
+				onFilesDrop(files, areaId, ev.target);
 				var jqXHR = area.find('input').fileupload('send', { files : files })
 					    .success(function (result, textStatus, jqXHR) {
-							simpleSampleMap.addWidgetFiles(files, params.areaId);
+							addWidgetFiles(files, areaId);
 						})
 					    .error(function (jqXHR, textStatus, errorThrown) {
 							console.error(errorThrown);
@@ -305,60 +424,19 @@ define(['ValueFilter', 'MIDIMessage'], function(valueFilter, midiMessage){
 			});
 
 			fm.add({
-				areaId : params.areaId,
+				areaId : areaId,
 				parent : area.find('.simplesamplemap'),
 				onFileChange : function(ev, data){
 					console.log('SimpleSampleMap.initializeWidget -> fm.add -> onFileChange');
-					simpleSampleMap.addWidgetFiles(data.files, params.areaId);
-					simpleSampleMap.onFilesDrop(data.files, params.areaId, ev.delegatedEvent.target);
+					addWidgetFiles(data.files, areaId);
+					onFilesDrop(data.files, areaId, ev.delegatedEvent.target);
 				}
 			});
 
-			simpleSampleMap.loadWidgetFiles(params.areaId);
+			loadWidgetFiles(areaId);
+			markTriggerCells(areaId);
         },
 
-
-		createTrigger : function(opts){
-			console.log('simpleSampleMap.createTrigger');
-			var note = opts.note;
-			var file = opts.file;
-			var playbackRate = opts.playbackRate || 0.063;
-			var detune = opts.detune || 100.0;
-
-			var trigger = {
-				"name":"oosh.midimessage." + note + " => ",
-				"event":{
-					"name": "oosh.midimessage",
-					"properties":{
-						":detail:properties:data[0]" : midiMessage.Constants.NoteOn,
-						":detail:properties:data[1]" : note,
-						":detail:properties:data[2]" : { "not" : "0" }
-					}
-				},
-				"targets": [
-				{
-	                "type": "WebAudioBuffer",
-	                "action":"play",
-	                "parameters": {
-	                    "url" : file,
-						"areaId": {
-	                        "input" : ":areaId"
-	                    },
-	                    "id": {
-	                        "input" : ":event:detail:properties:data[1]",
-							"transform": [
-								{"prefix": "WebAudioBuffer-"}
-							]
-	                    },
-	                    "gain" : {
-	                        "input" : ":event:detail:properties:data[2]",
-	                        "transform":[ {"divide" : 127} ]
-	                    }
-	                }
-				}]
-			};
-
-			return trigger;
-		}
+		createTrigger : createTrigger
 	};
 });
