@@ -5,8 +5,10 @@
   "description": "a Sails application",
   "keywords": [],
   "dependencies": {
+    "@sailshq/upgrade": "^1.0.9",
     "bluebird": "^3.5.3",
     "ejs": "2.5.5",
+    "fs-extra": "^9.0.1",
     "grunt": "^1.0.4",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-coffee": "^2.1.0",
@@ -22,8 +24,11 @@
     "include-all": "^4.0.3",
     "node-fs-extra": "^0.8.2",
     "rc": "^1.2.8",
-    "sails": "^1.1.0",
+    "sails": "^1.4.0",
     "sails-disk": "^1.1.0",
+    "sails-hook-grunt": "^4.0.1",
+    "sails-hook-orm": "^2.1.1",
+    "sails-hook-sockets": "^2.0.0",
     "sails-mongo": "^1.0.1"
   },
   "scripts": {
