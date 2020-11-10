@@ -1,7 +1,13 @@
 module.exports = {
 	identity: 'Project',
-	connection: 'locomongo',
+	datastore: 'locomongo',
+	primaryKey: 'id',
 	attributes: {
+		id: {
+	       type: 'number',
+	       autoIncrement: true,
+	       unique: true
+	    },
 		name: {
             type : 'STRING',
             minLength: 8,
@@ -13,7 +19,6 @@ module.exports = {
 			type : 'STRING',
             minLength: 4,
 			maxLength: 256,
-			alphanumericdashed : true,
 			unique: true,
 			required: true
 		},
@@ -25,7 +30,8 @@ module.exports = {
 		},
 
         screens : {
-			type: 'ARRAY'
+			type: 'json',
+			columnType: 'array'
 		},
 
 		hasScreen : function(screenInfoOrId){
@@ -51,9 +57,16 @@ module.exports = {
 				this.screens = [];
 			}
 
-			this.screens.push(screenInfo);
-			return this.save(function(err, updates){
-				cb(updates);
+			// for new Sails/waterline (https://sailsjs.com/documentation/reference/waterline-orm/models/replace-collection):
+			// this.screens.push(screenInfo);
+			// return this.save(function(err, updates){
+			// 	cb(updates);
+			// });
+			Project.replaceCollection(this.path, 'screens').members(screenInfo);
+			Project.findOne({ path : this.path })
+	        .then(function(foundProject){
+				delete foundProject.password;
+				cb(foundProject);
 			});
 		}
     },

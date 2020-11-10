@@ -28,6 +28,11 @@ module.exports.models = {
   *                                                                          *
   ***************************************************************************/
   // migrate: 'alter'
-  migrate: 'safe'
+  migrate: 'safe',
 
+    // for waterline/sails 1.0 (https://sailsjs.com/documentation/upgrading/to-v-1-0#?changes-to-create-createeach-update-and-destroy-results)
+    fetchRecordsOnUpdate: true,
+    fetchRecordsOnDestroy: true,
+    fetchRecordsOnCreate: true,
+    fetchRecordsOnCreateEach: true
 };
